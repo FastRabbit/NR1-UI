@@ -1844,7 +1844,6 @@ RightKnob_Rotation.setCallback(RightKnob_RotaryEvent)
 # /_____/\____/\____/\__/     /_____/\____/\__, /\____/  (_)
 #
 boot_logo_path = "/home/volumio/NR1-UI/img/bootlogo.gif"
-# show_logo(oledBootLogo, oled)
 # sleep(5)
 
 loading_logo_path = "/home/volumio/NR1-UI/img/loading.gif"
@@ -1858,7 +1857,6 @@ if ledActive is True and firstStart is True:
     SysStart()
 
 
-# show_logo(oled1BootLogo, oled)
 # show_logo2(oled2BootLogo, oled2)
 if ledActive is True and firstStart is True:
     Processor = threading.Thread(target=CPUload, daemon=True)

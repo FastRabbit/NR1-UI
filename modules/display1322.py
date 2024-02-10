@@ -5,17 +5,6 @@ from PIL import ImageDraw
 from PIL import ImageFont
 
 
-def show_logo(filename, device):
-    logoImage = Image.new('RGB', (device.width, device.height))
-    img_path = os.path.dirname(os.path.realpath(__file__)) + '/../img/'
-    try:
-        logoImage = Image.open(img_path + filename).convert('RGB')  # .resize((device.width, device.height), Image.ANTIALIAS)
-    except IOError:
-        print("Cannot open file %s" % filename)
-        pass
-    device.display(logoImage)
-
-
 def load_font(filename, font_size):
     font_path = os.path.dirname(os.path.realpath(__file__)) + '/../fonts/'
     try:
