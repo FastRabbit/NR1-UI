@@ -34,7 +34,6 @@ import urllib.request
 from urllib.parse import *  # from urllib import*
 from urllib.parse import urlparse
 from urllib.parse import urlencode
-from modules.loading_animation import show_loading_gif
 from modules.show_gif import show_gif
 import ssl
 import re
@@ -1844,13 +1843,10 @@ RightKnob_Rotation.setCallback(RightKnob_RotaryEvent)
 # /_____/\____/\____/\__/     /_____/\____/\__, /\____/  (_)
 #
 boot_logo_path = "/home/volumio/NR1-UI/img/bootlogo.gif"
-# sleep(5)
-
-loading_logo_path = "/home/volumio/NR1-UI/img/loading.gif"
 show_gif(oled, boot_logo_path, display_time=10)
 
-# Display the loading logo for 30 seconds
-show_loading_gif(oled, loading_logo_path, display_time=30)
+loading_logo_path = "/home/volumio/NR1-UI/img/loading.gif"
+show_gif(oled, loading_logo_path, display_time=30, frame_duration=0.05)
 
 
 if ledActive is True and firstStart is True:
