@@ -1857,7 +1857,6 @@ if ledActive is True and firstStart is True:
     SysStart()
 
 
-# show_logo2(oled2BootLogo, oled2)
 if ledActive is True and firstStart is True:
     Processor = threading.Thread(target=CPUload, daemon=True)
     Processor.start()
