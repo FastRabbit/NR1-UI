@@ -51,7 +51,7 @@ volumioIO = SocketIO(volumio_host, volumio_port)
 
 # Logic to prevent freeze if FIFO-Out for Cava is missing:
 ReNewMPDconf = {'endpoint': 'music_service/mpd', 'method': 'createMPDFile', 'data': ''}
-if SpectrumActive == True:
+if SpectrumActive is True:
     with open('/etc/mpd.conf') as f1:
         if '/tmp/mpd.fifo' in f1.read():
             print("CAVA1 Fifo-Output is present in mpd.conf")
@@ -79,9 +79,9 @@ if SpectrumActive == True:
 #                       /____/
 #
 if DisplayTechnology == 'spi1322':
-    if SpectrumActive == True:
+    if SpectrumActive is True:
         ScreenList = ['Spectrum-Center', 'No-Spectrum', 'Modern', 'VU-Meter-2', 'VU-Meter-Bar']
-    if SpectrumActive == False:
+    if SpectrumActive is False:
         ScreenList = ['No-Spectrum']
 
 NowPlayingLayoutSave = open('/home/volumio/NR1-UI/ConfigurationFiles/LayoutSet.txt').readline().rstrip()
@@ -96,7 +96,7 @@ if DisplayTechnology == 'spi1322':
         NowPlayingLayout = 'No-Spectrum'
 
 if NowPlayingLayoutSave != NowPlayingLayout:
-    if NowPlayingLayoutSave not in ScreenList and SpectrumActive == False:
+    if NowPlayingLayoutSave not in ScreenList and SpectrumActive is False:
         if DisplayTechnology == 'spi1322':
             WriteScreen1 = open('/home/volumio/NR1-UI/ConfigurationFiles/LayoutSet.txt', 'w')
             WriteScreen1.write('No-Spectrum')
@@ -263,7 +263,7 @@ if DisplayTechnology == 'spi1322':
 
 
 def display_update_service():
-    while UPDATE_INTERVAL > 0 and oled.ShutdownFlag == False:
+    while UPDATE_INTERVAL > 0 and oled.ShutdownFlag is False:
         prevTime = time()
         dt = time() - prevTime
         if oled.stateTimeout > 0:
@@ -422,10 +422,10 @@ def onPushState(data):
             newFormat = ''
         if newFormat is None:
             newFormat = ''
-        if newFormat == True and newSong != 'HiFiBerry ADC':
+        if newFormat is True and newSong != 'HiFiBerry ADC':
             newFormat = 'WebRadio'
             oled.activeFormat = newFormat
-        if newFormat == True and newSong == 'HiFiBerry ADC':
+        if newFormat is True and newSong == 'HiFiBerry ADC':
             newFormat = 'Live-Stream'
             oled.activeFormat = newFormat
 
@@ -492,7 +492,7 @@ def onPushState(data):
             oled.seek = data['seek']
         else:
             oled.seek = None
-        if NR1UIRemoteActive == True:
+        if NR1UIRemoteActive is True:
             if 'albumart' in data:
                 newAlbumart = data['albumart']
             else:
@@ -540,16 +540,16 @@ def onPushState(data):
             if oled.state == STATE_PLAYER:
                 if oled.playState != 'stop':
                     if newStatus == 'pause':
-                        if ledActive == True:
+                        if ledActive is True:
                             PlayLEDoff()
                         oled.playstateIcon = oledpauseIcon
                     if newStatus == 'play':
-                        if ledActive == True:
+                        if ledActive is True:
                             PlayLEDon()
                         oled.playstateIcon = oledplayIcon
                     oled.modal.UpdatePlayingInfo()
                 else:
-                    if ledActive == True:
+                    if ledActive is True:
                         PlayLEDoff()
                         StereoLEDoff()
                     ScrollArtistTag = 0
@@ -563,7 +563,7 @@ def onPushState(data):
                     SetState(STATE_PLAYER)
                     oled.modal.UpdateStandbyInfo()
 
-        if NR1UIRemoteActive == True:
+        if NR1UIRemoteActive is True:
             if newAlbumart != oled.activeAlbumart:
                 oled.activeAlbumart = newAlbumart
                 if AlbumArtHTTP is True and newFormat == 'WebRadio':
@@ -673,11 +673,11 @@ class NowPlayingScreen():
                 self.ArtistWidth, self.ArtistHeight = self.draw.textsize(oled.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
-                    if ScrollArtistFirstRound == True:
+                    if ScrollArtistFirstRound is True:
                         ScrollArtistFirstRound = False
                         ScrollArtistTag = 0
                         self.ArtistPosition = (Screen2text01)
-                    elif ScrollArtistFirstRound == False and ScrollArtistNextRound == False:
+                    elif ScrollArtistFirstRound is False and ScrollArtistNextRound is False:
                         if ScrollArtistTag <= self.ArtistWidth - 1:
                             ScrollArtistTag += ArtistScrollSpeed
                             self.ArtistPosition = (-ScrollArtistTag, Screen2text01[1])
@@ -686,11 +686,11 @@ class NowPlayingScreen():
                             ScrollArtistTag = 0
                             ScrollArtistNextRound = True
                             ScrollArtistNext = self.width + ArtistEndScrollMargin
-                    if ScrollArtistNextRound == True:
+                    if ScrollArtistNextRound is True:
                         if ScrollArtistNext >= 0:
                             self.ArtistPosition = (ScrollArtistNext, Screen2text01[1])
                             ScrollArtistNext -= ArtistScrollSpeed
-                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound == True:
+                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound is True:
                             ScrollArtistNext = 0
                             ScrollArtistNextRound = False
                             ScrollArtistFirstRound = False
@@ -703,11 +703,11 @@ class NowPlayingScreen():
                 self.SongWidth, self.SongHeight = self.draw.textsize(oled.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
-                    if ScrollSongFirstRound == True:
+                    if ScrollSongFirstRound is True:
                         ScrollSongFirstRound = False
                         ScrollSongTag = 0
                         self.SongPosition = (Screen2text02)
-                    elif ScrollSongFirstRound == False and ScrollSongNextRound == False:
+                    elif ScrollSongFirstRound is False and ScrollSongNextRound is False:
                         if ScrollSongTag <= self.SongWidth - 1:
                             ScrollSongTag += SongScrollSpeed
                             self.SongPosition = (-ScrollSongTag, Screen2text02[1])
@@ -716,11 +716,11 @@ class NowPlayingScreen():
                             ScrollSongTag = 0
                             ScrollSongNextRound = True
                             ScrollSongNext = self.width + SongEndScrollMargin
-                    if ScrollSongNextRound == True:
+                    if ScrollSongNextRound is True:
                         if ScrollSongNext >= 0:
                             self.SongPosition = (ScrollSongNext, Screen2text02[1])
                             ScrollSongNext -= SongScrollSpeed
-                        elif ScrollSongNext == -SongScrollSpeed and ScrollSongNextRound == True:
+                        elif ScrollSongNext == -SongScrollSpeed and ScrollSongNextRound is True:
                             ScrollSongNext = 0
                             ScrollSongNextRound = False
                             ScrollSongFirstRound = False
@@ -775,11 +775,11 @@ class NowPlayingScreen():
                 self.ArtistWidth, self.ArtistHeight = self.draw.textsize(oled.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
-                    if ScrollArtistFirstRound == True:
+                    if ScrollArtistFirstRound is True:
                         ScrollArtistFirstRound = False
                         ScrollArtistTag = 0
                         self.ArtistPosition = (Screen2text01)
-                    elif ScrollArtistFirstRound == False and ScrollArtistNextRound == False:
+                    elif ScrollArtistFirstRound is False and ScrollArtistNextRound is False:
                         if ScrollArtistTag <= self.ArtistWidth - 1:
                             ScrollArtistTag += ArtistScrollSpeed
                             self.ArtistPosition = (-ScrollArtistTag, Screen2text01[1])
@@ -788,11 +788,11 @@ class NowPlayingScreen():
                             ScrollArtistTag = 0
                             ScrollArtistNextRound = True
                             ScrollArtistNext = self.width + ArtistEndScrollMargin
-                    if ScrollArtistNextRound == True:
+                    if ScrollArtistNextRound is True:
                         if ScrollArtistNext >= 0:
                             self.ArtistPosition = (ScrollArtistNext, Screen2text01[1])
                             ScrollArtistNext -= ArtistScrollSpeed
-                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound == True:
+                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound is True:
                             ScrollArtistNext = 0
                             ScrollArtistNextRound = False
                             ScrollArtistFirstRound = False
@@ -809,11 +809,11 @@ class NowPlayingScreen():
                 self.SongWidth, self.SongHeight = self.draw.textsize(oled.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
-                    if ScrollSongFirstRound == True:
+                    if ScrollSongFirstRound is True:
                         ScrollSongFirstRound = False
                         ScrollSongTag = 0
                         self.SongPosition = (Screen2text02)
-                    elif ScrollSongFirstRound == False and ScrollSongNextRound == False:
+                    elif ScrollSongFirstRound is False and ScrollSongNextRound is False:
                         if ScrollSongTag <= self.SongWidth - 1:
                             ScrollSongTag += SongScrollSpeed
                             self.SongPosition = (-ScrollSongTag, Screen2text02[1])
@@ -822,11 +822,11 @@ class NowPlayingScreen():
                             ScrollSongTag = 0
                             ScrollSongNextRound = True
                             ScrollSongNext = self.width + SongEndScrollMargin
-                    if ScrollSongNextRound == True:
+                    if ScrollSongNextRound is True:
                         if ScrollSongNext >= 0:
                             self.SongPosition = (ScrollSongNext, Screen2text02[1])
                             ScrollSongNext -= SongScrollSpeed
-                        elif ScrollSongNext == -SongScrollSpeed and ScrollSongNextRound == True:
+                        elif ScrollSongNext == -SongScrollSpeed and ScrollSongNextRound is True:
                             ScrollSongNext = 0
                             ScrollSongNextRound = False
                             ScrollSongFirstRound = False
@@ -855,11 +855,11 @@ class NowPlayingScreen():
                 self.ArtistWidth, self.ArtistHeight = self.draw.textsize(oled.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
-                    if ScrollArtistFirstRound == True:
+                    if ScrollArtistFirstRound is True:
                         ScrollArtistFirstRound = False
                         ScrollArtistTag = 0
                         self.ArtistPosition = (Screen4text01)
-                    elif ScrollArtistFirstRound == False and ScrollArtistNextRound == False:
+                    elif ScrollArtistFirstRound is False and ScrollArtistNextRound is False:
                         if ScrollArtistTag <= self.ArtistWidth - 1:
                             ScrollArtistTag += ArtistScrollSpeed
                             self.ArtistPosition = (-ScrollArtistTag, Screen4text01[1])
@@ -868,11 +868,11 @@ class NowPlayingScreen():
                             ScrollArtistTag = 0
                             ScrollArtistNextRound = True
                             ScrollArtistNext = self.width + ArtistEndScrollMargin
-                    if ScrollArtistNextRound == True:
+                    if ScrollArtistNextRound is True:
                         if ScrollArtistNext >= 0:
                             self.ArtistPosition = (ScrollArtistNext, Screen4text01[1])
                             ScrollArtistNext -= ArtistScrollSpeed
-                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound == True:
+                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound is True:
                             ScrollArtistNext = 0
                             ScrollArtistNextRound = False
                             ScrollArtistFirstRound = False
@@ -888,11 +888,11 @@ class NowPlayingScreen():
                 self.SongWidth, self.SongHeight = self.draw.textsize(oled.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
-                    if ScrollSongFirstRound == True:
+                    if ScrollSongFirstRound is True:
                         ScrollSongFirstRound = False
                         ScrollSongTag = 0
                         self.SongPosition = (Screen4text02)
-                    elif ScrollSongFirstRound == False and ScrollSongNextRound == False:
+                    elif ScrollSongFirstRound is False and ScrollSongNextRound is False:
                         if ScrollSongTag <= self.SongWidth - 1:
                             ScrollSongTag += SongScrollSpeed
                             self.SongPosition = (-ScrollSongTag, Screen4text02[1])
@@ -901,11 +901,11 @@ class NowPlayingScreen():
                             ScrollSongTag = 0
                             ScrollSongNextRound = True
                             ScrollSongNext = self.width + SongEndScrollMargin
-                    if ScrollSongNextRound == True:
+                    if ScrollSongNextRound is True:
                         if ScrollSongNext >= 0:
                             self.SongPosition = (ScrollSongNext, Screen4text02[1])
                             ScrollSongNext -= SongScrollSpeed
-                        elif ScrollSongNext == -SongScrollSpeed and ScrollSongNextRound == True:
+                        elif ScrollSongNext == -SongScrollSpeed and ScrollSongNextRound is True:
                             ScrollSongNext = 0
                             ScrollSongNextRound = False
                             ScrollSongFirstRound = False
@@ -928,15 +928,15 @@ class NowPlayingScreen():
                 # self.draw.text((Screen4text07), str(oled.activeSamplerate), font=font4, fill='white')
                 # self.draw.text((Screen4text08), oled.activeBitdepth, font=font4, fill='white')
 
-                if oled.repeat == True:
-                    if oled.repeatonce == False:
+                if oled.repeat is True:
+                    if oled.repeatonce is False:
                         self.draw.text((Screen4text33), oledrepeat, font=labelfont, fill='white')
-                    if oled.repeatonce == True:
+                    if oled.repeatonce is True:
                         self.draw.text((Screen4text33), oledrepeat, font=labelfont, fill='white')
                         self.draw.text((Screen4text34), str(1), font=font4, fill='white')
-                if oled.shuffle == True:
+                if oled.shuffle is True:
                     self.draw.text((Screen4text35), oledshuffle, font=labelfont, fill='white')
-                if oled.mute == False:
+                if oled.mute is False:
                     self.draw.text((Screen4text30), oledvolumeon, font=labelfontfa, fill='white')
                 else:
                     self.draw.text((Screen4text31), oledvolumeoff, font=labelfontfa, fill='white')
@@ -967,11 +967,11 @@ class NowPlayingScreen():
                 self.ArtistWidth, self.ArtistHeight = self.draw.textsize(oled.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
-                    if ScrollArtistFirstRound == True:
+                    if ScrollArtistFirstRound is True:
                         ScrollArtistFirstRound = False
                         ScrollArtistTag = 0
                         self.ArtistPosition = (Screen4text01)
-                    elif ScrollArtistFirstRound == False and ScrollArtistNextRound == False:
+                    elif ScrollArtistFirstRound is False and ScrollArtistNextRound is False:
                         if ScrollArtistTag <= self.ArtistWidth - 1:
                             ScrollArtistTag += ArtistScrollSpeed
                             self.ArtistPosition = (-ScrollArtistTag, Screen4text01[1])
@@ -980,11 +980,11 @@ class NowPlayingScreen():
                             ScrollArtistTag = 0
                             ScrollArtistNextRound = True
                             ScrollArtistNext = self.width + ArtistEndScrollMargin
-                    if ScrollArtistNextRound == True:
+                    if ScrollArtistNextRound is True:
                         if ScrollArtistNext >= 0:
                             self.ArtistPosition = (ScrollArtistNext, Screen4text01[1])
                             ScrollArtistNext -= ArtistScrollSpeed
-                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound == True:
+                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound is True:
                             ScrollArtistNext = 0
                             ScrollArtistNextRound = False
                             ScrollArtistFirstRound = False
@@ -1000,11 +1000,11 @@ class NowPlayingScreen():
                 self.SongWidth, self.SongHeight = self.draw.textsize(oled.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
-                    if ScrollSongFirstRound == True:
+                    if ScrollSongFirstRound is True:
                         ScrollSongFirstRound = False
                         ScrollSongTag = 0
                         self.SongPosition = (Screen4text02)
-                    elif ScrollSongFirstRound == False and ScrollSongNextRound == False:
+                    elif ScrollSongFirstRound is False and ScrollSongNextRound is False:
                         if ScrollSongTag <= self.SongWidth - 1:
                             ScrollSongTag += SongScrollSpeed
                             self.SongPosition = (-ScrollSongTag, Screen4text02[1])
@@ -1013,11 +1013,11 @@ class NowPlayingScreen():
                             ScrollSongTag = 0
                             ScrollSongNextRound = True
                             ScrollSongNext = self.width + SongEndScrollMargin
-                    if ScrollSongNextRound == True:
+                    if ScrollSongNextRound is True:
                         if ScrollSongNext >= 0:
                             self.SongPosition = (ScrollSongNext, Screen4text02[1])
                             ScrollSongNext -= SongScrollSpeed
-                        elif ScrollSongNext == -SongScrollSpeed and ScrollSongNextRound == True:
+                        elif ScrollSongNext == -SongScrollSpeed and ScrollSongNextRound is True:
                             ScrollSongNext = 0
                             ScrollSongNextRound = False
                             ScrollSongFirstRound = False
@@ -1029,15 +1029,15 @@ class NowPlayingScreen():
                 self.draw.text((Screen4text60), oled.playstateIcon, font=labelfont, fill='white')
                 self.draw.text((Screen4Text61), oled.activeFormat, font=font4, fill='white')
                 self.draw.text((Screen4text62), oled.bitrate, font=font4, fill='white')
-                if oled.repeat == True:
-                    if oled.repeatonce == False:
+                if oled.repeat is True:
+                    if oled.repeatonce is False:
                         self.draw.text((Screen4text63), oledrepeat, font=labelfont, fill='white')
-                    if oled.repeatonce == True:
+                    if oled.repeatonce is True:
                         self.draw.text((Screen4text63), oledrepeat, font=labelfont, fill='white')
                         self.draw.text((Screen4text64), str(1), font=font4, fill='white')
-                if oled.shuffle == True:
+                if oled.shuffle is True:
                     self.draw.text((Screen4text65), oledshuffle, font=labelfont, fill='white')
-                if oled.mute == False:
+                if oled.mute is False:
                     self.draw.text((Screen4text66), oledvolumeon, font=labelfontfa, fill='white')
                 else:
                     self.draw.text((Screen4text67), oledvolumeoff, font=labelfontfa, fill='white')
@@ -1062,11 +1062,11 @@ class NowPlayingScreen():
                 self.ArtistWidth, self.ArtistHeight = self.draw.textsize(TextBaustein, font=font6)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
-                    if ScrollArtistFirstRound == True:
+                    if ScrollArtistFirstRound is True:
                         ScrollArtistFirstRound = False
                         ScrollArtistTag = 0
                         self.ArtistPosition = (Screen5text01)
-                    elif ScrollArtistFirstRound == False and ScrollArtistNextRound == False:
+                    elif ScrollArtistFirstRound is False and ScrollArtistNextRound is False:
                         if ScrollArtistTag <= self.ArtistWidth - 1:
                             ScrollArtistTag += ArtistScrollSpeed
                             self.ArtistPosition = (-ScrollArtistTag, Screen5text01[1])
@@ -1075,11 +1075,11 @@ class NowPlayingScreen():
                             ScrollArtistTag = 0
                             ScrollArtistNextRound = True
                             ScrollArtistNext = self.width + ArtistEndScrollMargin
-                    if ScrollArtistNextRound == True:
+                    if ScrollArtistNextRound is True:
                         if ScrollArtistNext >= 0:
                             self.ArtistPosition = (ScrollArtistNext, Screen5text01[1])
                             ScrollArtistNext -= ArtistScrollSpeed
-                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound == True:
+                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound is True:
                             ScrollArtistNext = 0
                             ScrollArtistNextRound = False
                             ScrollArtistFirstRound = False
@@ -1143,11 +1143,11 @@ class NowPlayingScreen():
                 self.ArtistWidth, self.ArtistHeight = self.draw.textsize(TextBaustein, font=font6)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
-                    if ScrollArtistFirstRound == True:
+                    if ScrollArtistFirstRound is True:
                         ScrollArtistFirstRound = False
                         ScrollArtistTag = 0
                         self.ArtistPosition = (Screen5text01)
-                    elif ScrollArtistFirstRound == False and ScrollArtistNextRound == False:
+                    elif ScrollArtistFirstRound is False and ScrollArtistNextRound is False:
                         if ScrollArtistTag <= self.ArtistWidth - 1:
                             ScrollArtistTag += ArtistScrollSpeed
                             self.ArtistPosition = (-ScrollArtistTag, Screen5text01[1])
@@ -1156,11 +1156,11 @@ class NowPlayingScreen():
                             ScrollArtistTag = 0
                             ScrollArtistNextRound = True
                             ScrollArtistNext = self.width + ArtistEndScrollMargin
-                    if ScrollArtistNextRound == True:
+                    if ScrollArtistNextRound is True:
                         if ScrollArtistNext >= 0:
                             self.ArtistPosition = (ScrollArtistNext, Screen5text01[1])
                             ScrollArtistNext -= ArtistScrollSpeed
-                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound == True:
+                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound is True:
                             ScrollArtistNext = 0
                             ScrollArtistNextRound = False
                             ScrollArtistFirstRound = False
@@ -1215,11 +1215,11 @@ class NowPlayingScreen():
                 self.ArtistWidth, self.ArtistHeight = self.draw.textsize(TextBaustein, font=font8)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
-                    if ScrollArtistFirstRound == True:
+                    if ScrollArtistFirstRound is True:
                         ScrollArtistFirstRound = False
                         ScrollArtistTag = 0
                         self.ArtistPosition = (Screen7text01)
-                    elif ScrollArtistFirstRound == False and ScrollArtistNextRound == False:
+                    elif ScrollArtistFirstRound is False and ScrollArtistNextRound is False:
                         if ScrollArtistTag <= self.ArtistWidth - 1:
                             ScrollArtistTag += ArtistScrollSpeed
                             self.ArtistPosition = (-ScrollArtistTag, Screen7text01[1])
@@ -1228,11 +1228,11 @@ class NowPlayingScreen():
                             ScrollArtistTag = 0
                             ScrollArtistNextRound = True
                             ScrollArtistNext = self.width + ArtistEndScrollMargin
-                    if ScrollArtistNextRound == True:
+                    if ScrollArtistNextRound is True:
                         if ScrollArtistNext >= 0:
                             self.ArtistPosition = (ScrollArtistNext, Screen7text01[1])
                             ScrollArtistNext -= ArtistScrollSpeed
-                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound == True:
+                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound is True:
                             ScrollArtistNext = 0
                             ScrollArtistNextRound = False
                             ScrollArtistFirstRound = False
@@ -1281,11 +1281,11 @@ class NowPlayingScreen():
                 self.ArtistWidth, self.ArtistHeight = self.draw.textsize(TextBaustein, font=font8)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
-                    if ScrollArtistFirstRound == True:
+                    if ScrollArtistFirstRound is True:
                         ScrollArtistFirstRound = False
                         ScrollArtistTag = 0
                         self.ArtistPosition = (Screen7text01)
-                    elif ScrollArtistFirstRound == False and ScrollArtistNextRound == False:
+                    elif ScrollArtistFirstRound is False and ScrollArtistNextRound is False:
                         if ScrollArtistTag <= self.ArtistWidth - 1:
                             ScrollArtistTag += ArtistScrollSpeed
                             self.ArtistPosition = (-ScrollArtistTag, Screen7text01[1])
@@ -1294,11 +1294,11 @@ class NowPlayingScreen():
                             ScrollArtistTag = 0
                             ScrollArtistNextRound = True
                             ScrollArtistNext = self.width + ArtistEndScrollMargin
-                    if ScrollArtistNextRound == True:
+                    if ScrollArtistNextRound is True:
                         if ScrollArtistNext >= 0:
                             self.ArtistPosition = (ScrollArtistNext, Screen7text01[1])
                             ScrollArtistNext -= ArtistScrollSpeed
-                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound == True:
+                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound is True:
                             ScrollArtistNext = 0
                             ScrollArtistNextRound = False
                             ScrollArtistFirstRound = False
@@ -1335,11 +1335,11 @@ class NowPlayingScreen():
                 self.ArtistWidth, self.ArtistHeight = self.draw.textsize(oled.activeArtist, font=font13)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width - 60:
-                    if ScrollArtistFirstRound == True:
+                    if ScrollArtistFirstRound is True:
                         ScrollArtistFirstRound = False
                         ScrollArtistTag = 60
                         self.ArtistPosition = (Screen8text01[0] + 60, Screen8text01[1])
-                    elif ScrollArtistFirstRound == False and ScrollArtistNextRound == False:
+                    elif ScrollArtistFirstRound is False and ScrollArtistNextRound is False:
                         if ScrollArtistTag <= self.ArtistWidth - 60:
                             ScrollArtistTag += ArtistScrollSpeed
                             self.ArtistPosition = (-ScrollArtistTag, Screen8text01[1])
@@ -1348,11 +1348,11 @@ class NowPlayingScreen():
                             ScrollArtistTag = 60
                             ScrollArtistNextRound = True
                             ScrollArtistNext = self.width + ArtistEndScrollMargin
-                    if ScrollArtistNextRound == True:
+                    if ScrollArtistNextRound is True:
                         if ScrollArtistNext >= 61:
                             self.ArtistPosition = (ScrollArtistNext, Screen8text01[1])
                             ScrollArtistNext -= ArtistScrollSpeed
-                        elif ScrollArtistNext == 60 and ScrollArtistNextRound == True:
+                        elif ScrollArtistNext == 60 and ScrollArtistNextRound is True:
                             ScrollArtistNext = 60
                             ScrollArtistNextRound = False
                             ScrollArtistFirstRound = False
@@ -1368,11 +1368,11 @@ class NowPlayingScreen():
                 self.SongWidth, self.SongHeight = self.draw.textsize(oled.activeSong, font=font14)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width - 60:
-                    if ScrollSongFirstRound == True:
+                    if ScrollSongFirstRound is True:
                         ScrollSongFirstRound = False
                         ScrollSongTag = 60
                         self.SongPosition = (Screen8text02[0] + 60, Screen8text02[1])
-                    elif ScrollSongFirstRound == False and ScrollSongNextRound == False:
+                    elif ScrollSongFirstRound is False and ScrollSongNextRound is False:
                         if ScrollSongTag <= self.SongWidth - 60:
                             ScrollSongTag += SongScrollSpeed
                             self.SongPosition = (-ScrollSongTag, Screen8text02[1])
@@ -1381,11 +1381,11 @@ class NowPlayingScreen():
                             ScrollSongTag = 60
                             ScrollSongNextRound = True
                             ScrollSongNext = self.width + SongEndScrollMargin
-                    if ScrollSongNextRound == True:
+                    if ScrollSongNextRound is True:
                         if ScrollSongNext >= 61:
                             self.SongPosition = (ScrollSongNext, Screen8text02[1])
                             ScrollSongNext -= SongScrollSpeed
-                        elif ScrollSongNext == 60 and ScrollSongNextRound == True:
+                        elif ScrollSongNext == 60 and ScrollSongNextRound is True:
                             ScrollSongNext = 60
                             ScrollSongNextRound = False
                             ScrollSongFirstRound = True
@@ -1473,11 +1473,11 @@ class NowPlayingScreen():
                 self.ArtistWidth, self.ArtistHeight = self.draw.textsize(oled.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
-                    if ScrollArtistFirstRound == True:
+                    if ScrollArtistFirstRound is True:
                         ScrollArtistFirstRound = False
                         ScrollArtistTag = 0
                         self.ArtistPosition = (Screen8text11)
-                    elif ScrollArtistFirstRound == False and ScrollArtistNextRound == False:
+                    elif ScrollArtistFirstRound is False and ScrollArtistNextRound is False:
                         if ScrollArtistTag <= self.ArtistWidth - 1:
                             ScrollArtistTag += ArtistScrollSpeed
                             self.ArtistPosition = (-ScrollArtistTag, Screen8text11[1])
@@ -1486,11 +1486,11 @@ class NowPlayingScreen():
                             ScrollArtistTag = 0
                             ScrollArtistNextRound = True
                             ScrollArtistNext = self.width + ArtistEndScrollMargin
-                    if ScrollArtistNextRound == True:
+                    if ScrollArtistNextRound is True:
                         if ScrollArtistNext >= 0:
                             self.ArtistPosition = (ScrollArtistNext, Screen8text11[1])
                             ScrollArtistNext -= ArtistScrollSpeed
-                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound == True:
+                        elif ScrollArtistNext == -ArtistScrollSpeed and ScrollArtistNextRound is True:
                             ScrollArtistNext = 0
                             ScrollArtistNextRound = False
                             ScrollArtistFirstRound = False
@@ -1506,11 +1506,11 @@ class NowPlayingScreen():
                 self.SongWidth, self.SongHeight = self.draw.textsize(oled.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
-                    if ScrollSongFirstRound == True:
+                    if ScrollSongFirstRound is True:
                         ScrollSongFirstRound = False
                         ScrollSongTag = 0
                         self.SongPosition = (Screen8text22)
-                    elif ScrollSongFirstRound == False and ScrollSongNextRound == False:
+                    elif ScrollSongFirstRound is False and ScrollSongNextRound is False:
                         if ScrollSongTag <= self.SongWidth - 1:
                             ScrollSongTag += SongScrollSpeed
                             self.SongPosition = (-ScrollSongTag, Screen8text22[1])
@@ -1519,11 +1519,11 @@ class NowPlayingScreen():
                             ScrollSongTag = 0
                             ScrollSongNextRound = True
                             ScrollSongNext = self.width + SongEndScrollMargin
-                    if ScrollSongNextRound == True:
+                    if ScrollSongNextRound is True:
                         if ScrollSongNext >= 0:
                             self.SongPosition = (ScrollSongNext, Screen8text22[1])
                             ScrollSongNext -= SongScrollSpeed
-                        elif ScrollSongNext == -SongScrollSpeed and ScrollSongNextRound == True:
+                        elif ScrollSongNext == -SongScrollSpeed and ScrollSongNextRound is True:
                             ScrollSongNext = 0
                             ScrollSongNextRound = False
                             ScrollSongFirstRound = False
@@ -1855,7 +1855,7 @@ show_boot_logo_gif(oled, boot_logo_path, display_time=10)
 show_loading_gif(oled, loading_logo_path, display_time=30)
 
 
-if ledActive == True and firstStart == True:
+if ledActive is True and firstStart is True:
     SysStart()
 
 # Show loading sequence
@@ -1863,7 +1863,7 @@ if ledActive == True and firstStart == True:
 
 # show_logo(oled1BootLogo, oled)
 # show_logo2(oled2BootLogo, oled2)
-if ledActive == True and firstStart == True:
+if ledActive is True and firstStart is True:
     Processor = threading.Thread(target=CPUload, daemon=True)
     Processor.start()
     firstStart = False
@@ -1945,7 +1945,7 @@ while True:
 
 
 # this is the loop to push the actual time every 0.1sec to the "Standby-Screen"
-    if oled.state == STATE_PLAYER and newStatus == 'stop' and oled.ShutdownFlag == False:
+    if oled.state == STATE_PLAYER and newStatus == 'stop' and oled.ShutdownFlag is False:
         InfoTag = 0  # resets the InfoTag helper from artist/song update loop
         oled.state = 0
         oled.time = strftime("%H:%M")
@@ -1954,7 +1954,7 @@ while True:
         sleep(0.2)
 
 # if playback is paused, here is defined when the Player goes back to "Standby"/Stop
-    if oled.state == STATE_PLAYER and newStatus == 'pause' and varcanc == True:
+    if oled.state == STATE_PLAYER and newStatus == 'pause' and varcanc is True:
         secvar = int(round(time()))
         varcanc = False
     elif oled.state == STATE_PLAYER and newStatus == 'pause' and int(round(time())) - secvar > oledPause2StopTime:
@@ -1963,17 +1963,17 @@ while True:
         oled.modal.UpdateStandbyInfo()
         secvar = 0.0
 
-    if oled.state == STATE_PLAYER and newStatus == 'play' and oled.ScreenTimerStart == True:
+    if oled.state == STATE_PLAYER and newStatus == 'play' and oled.ScreenTimerStart is True:
         oled.ScreenTimerStamp = int(round(time()))
         oled.ScreenTimerStart = False
         oled.ScreenTimer10 = True
 
     if oled.state == STATE_PLAYER and newStatus != 'stop':
-        if oled.ScreenTimer10 == True and (int(round(time())) - oled.ScreenTimerStamp > oled.ScreenTimerChangeTime):
+        if oled.ScreenTimer10 is True and (int(round(time())) - oled.ScreenTimerStamp > oled.ScreenTimerChangeTime):
             oled.ScreenTimerChangeTime
             oled.ScreenTimer10 = False
             oled.ScreenTimer20 = True
-        if oled.ScreenTimer20 == True and ((int(round(time())) - oled.ScreenTimerStamp) > (oled.ScreenTimerChangeTime * 2)):
+        if oled.ScreenTimer20 is True and ((int(round(time())) - oled.ScreenTimerStamp) > (oled.ScreenTimerChangeTime * 2)):
             oled.ScreenTimer20 = False
             oled.ScreenTimerStart = True
             oled.ScreenTimerStamp = 0.0
