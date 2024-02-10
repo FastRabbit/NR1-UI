@@ -1,6 +1,7 @@
 from time import sleep
 import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM) 
+GPIO.setmode(GPIO.BCM)
+
 
 class PushButton:
 
@@ -17,15 +18,15 @@ class PushButton:
         GPIO.add_event_detect(self.pin, GPIO.BOTH, callback=self.callback)
 
     def callback(self, channel):
-        measured_time = self.minimum_time/2
-        sleep(self.minimum_time/2)
-        if (GPIO.input(self.pin)): # false detect
+        measured_time = self.minimum_time / 2
+        sleep(self.minimum_time / 2)
+        if (GPIO.input(self.pin)):  # false detect
             return
-        for i in range(int(self.maximum_time*50 - self.minimum_time*25 + 0.5)): # count max_time seconds when button held down
-            if (GPIO.input(self.pin)): # When button is released, go on.
+        for i in range(int(self.maximum_time * 50 - self.minimum_time * 25 + 0.5)):  # count max_time seconds when button held down
+            if (GPIO.input(self.pin)):  # When button is released, go on.
                 break
             measured_time += 0.02
             sleep(0.02)
         if measured_time >= self.minimum_time and channel == self.pin and self.callbackFunction:
-            print('PIN: '+str(self.pin)+', time: '+str(measured_time))
+            print('PIN: ' + str(self.pin) + ', time: ' + str(measured_time))
             return self.callbackFunction(measured_time)

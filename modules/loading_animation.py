@@ -1,6 +1,7 @@
 import time
 from PIL import Image, ImageSequence
 
+
 def show_loading_gif(oled, gif_path, display_time=45):
     start_time = time.time()
 
@@ -18,4 +19,3 @@ def show_loading_gif(oled, gif_path, display_time=45):
                 print(f"AssertionError: {e}")
                 print(f"Image mode: {image.mode}, OLED mode: {oled.mode}")
             time.sleep(0.05)
-

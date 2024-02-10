@@ -1,6 +1,7 @@
 import time
 from PIL import Image, ImageSequence
 
+
 def show_boot_logo_gif(oled, gif_path, display_time=10, frame_duration=0.1):
     start_time = time.time()
 
@@ -18,4 +19,3 @@ def show_boot_logo_gif(oled, gif_path, display_time=10, frame_duration=0.1):
                 print(f"AssertionError: {e}")
                 print(f"Image mode: {image.mode}, OLED mode: {oled.mode}")
             time.sleep(frame_duration)  # Adjust the sleep time to control the animation speed
-

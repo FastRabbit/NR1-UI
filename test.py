@@ -37,6 +37,8 @@ button_map = [
 ]
 
 # Function to read button matrix state
+
+
 def read_button_matrix():
     button_matrix_state = [[0] * 2 for _ in range(4)]
 
@@ -50,11 +52,15 @@ def read_button_matrix():
     return button_matrix_state
 
 # Function to control LEDs
+
+
 def control_leds(led_state):
     print(f"Setting LED state to {led_state}.")
     bus.write_byte_data(MCP23017_ADDRESS, MCP23017_GPIOA, led_state)
 
 # Function to check buttons and update LED states
+
+
 def check_buttons_and_update_leds():
     global prev_button_state  # Use the global variable prev_button_state
 
@@ -74,6 +80,7 @@ def check_buttons_and_update_leds():
             prev_button_state[row][col] = current_button_state
 
     time.sleep(0.1)  # Debounce delay
+
 
 # Initialize prev_button_state
 prev_button_state = [[1] * 2 for _ in range(4)]

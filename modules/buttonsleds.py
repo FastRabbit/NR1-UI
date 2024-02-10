@@ -4,7 +4,7 @@ import subprocess
 import requests
 import json
 from socketIO_client import SocketIO
-#from modules.button_functions import ButtonC_PushEvent
+# from modules.button_functions import ButtonC_PushEvent
 
 MCP23017_IODIRA = 0x00  # I/O direction register for Port A
 MCP23017_IODIRB = 0x01  # I/O direction register for Port B
@@ -48,8 +48,9 @@ button_map = [
     [8, 7]   # Row 4
 ]
 
+
 def read_button_matrix():
-    button_matrix_state = [[0]*2 for _ in range(4)]  # Create a 4x2 matrix filled with zeros
+    button_matrix_state = [[0] * 2 for _ in range(4)]  # Create a 4x2 matrix filled with zeros
     for column in range(2):
         # Drive one column low at a time (for PB0 and PB1)
         bus.write_byte_data(MCP23017_ADDRESS, MCP23017_GPIOB, ~(1 << column) & 0x03)
@@ -67,6 +68,8 @@ def control_leds(led_state):
     bus.write_byte_data(MCP23017_ADDRESS, MCP23017_GPIOA, led_state)
 
 # Debounce function
+
+
 def debounce_button(button_state):
     debounce_time = 0.25  # Adjust this delay as needed
     time.sleep(debounce_time)
@@ -74,6 +77,8 @@ def debounce_button(button_state):
     return new_button_state == button_state
 
 # Volumio Activation Functions (These are your provided functions)
+
+
 def activate_play():
     print("Activating play.")
     try:
@@ -82,6 +87,7 @@ def activate_play():
         print("Error: ", e)
     else:
         print("Playback started.")
+
 
 def activate_pause():
     print("Activating pause.")
@@ -92,6 +98,7 @@ def activate_pause():
     else:
         print("Playback paused.")
 
+
 def activate_back():
     print("Activating previous track.")
     try:
@@ -101,6 +108,7 @@ def activate_back():
     else:
         print("Track skipped back.")
 
+
 def activate_forward():
     print("Activating next track.")
     try:
@@ -109,6 +117,7 @@ def activate_forward():
         print("Error: ", e)
     else:
         print("Track skipped forward.")
+
 
 def activate_shuffle():
     try:
@@ -122,6 +131,7 @@ def activate_shuffle():
     else:
         print("Random mode toggled.")
 
+
 def activate_repeat():
     try:
         volumio_state = get_volumio_state()
@@ -134,6 +144,7 @@ def activate_repeat():
     else:
         print('Repeat mode toggled.')
 
+
 def activate_favourites():
     try:
         volumioIO.emit('playPlaylist', {'name': 'favourites'})
@@ -142,14 +153,17 @@ def activate_favourites():
     else:
         print("Favourites playlist loaded.")
 
+
 def activate_ButtonC():
     print("ButtonC pressed.")
     # Call any additional functionality you'd like when ButtonC is pressed.
     ButtonC_PushEvent()
 
+
 def ButtonC_PushEvent():
     # Your code for what should happen on a ButtonC press
     print("ButtonC action performed")
+
 
 def get_volumio_state():
     print("Fetching Volumio state.")
@@ -162,12 +176,14 @@ def get_volumio_state():
     else:
         return json.loads(response.text)
 
+
 print("Starting button check loop.")
 
 VOLUMIO_STATE_TO_LED = {
     'play': 0b00000001,  # Example LED pattern for play state
     'stop': 0b00000010,  # Example LED pattern for pause state
 }
+
 
 def update_leds_with_volumio_state():
     volumio_state = get_volumio_state()
@@ -176,8 +192,9 @@ def update_leds_with_volumio_state():
         led_pattern = VOLUMIO_STATE_TO_LED.get(status, 0)  # Default to 0 (all LEDs off) if status not found
         control_leds(led_pattern)
 
+
 # Initialize prev_button_state at the top level of your script
-prev_button_state = [[1]*2 for _ in range(4)]  # Default to 'not pressed' state
+prev_button_state = [[1] * 2 for _ in range(4)]  # Default to 'not pressed' state
 
 
 def check_buttons_and_update_leds(button_c_callback=None):
@@ -192,7 +209,7 @@ def check_buttons_and_update_leds(button_c_callback=None):
             # Check for rising edge (button press)
             if current_button_state == 0 and prev_button_state[row][col] != current_button_state:
                 print(f"Button {button_id} pressed")
-                
+
                 # Check if the pressed button is ButtonC, whose ID is 8
                 if button_id == 8 and button_c_callback is not None:
                     # Call the ButtonC_PushEvent function passed as a parameter

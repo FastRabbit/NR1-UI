@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 
+
 class RotaryEncoder:
 
     UNKNOWN = 0
@@ -13,7 +14,7 @@ class RotaryEncoder:
         self.ppc = pulses_per_cycle
         self.direction = RotaryEncoder.UNKNOWN
         self.prevState = 0b11
-        self.relposition = 0;
+        self.relposition = 0
 
         GPIO.setup(self.pinA, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(self.pinB, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -32,7 +33,7 @@ class RotaryEncoder:
         sm = (self.prevState << 2) | newState
         self.prevState = newState
 
-        if(sm == 0b1101 or sm == 0b0100 or sm == 0b0010 or sm == 0b1011):
+        if (sm == 0b1101 or sm == 0b0100 or sm == 0b0010 or sm == 0b1011):
             self.relposition -= 1
             if self.relposition <= -self.ppc:
                 self.relposition = 0
@@ -43,7 +44,7 @@ class RotaryEncoder:
                 self.relposition = 0
                 self.direction = RotaryEncoder.RIGHT
 
-        if newState == 0b11:   #locking position
-            self.relposition = 0 
+        if newState == 0b11:  # locking position
+            self.relposition = 0
         if self.callbackFunction and self.direction != RotaryEncoder.UNKNOWN:
             return self.callbackFunction(self.direction)
