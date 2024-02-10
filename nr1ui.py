@@ -35,7 +35,7 @@ from urllib.parse import *  # from urllib import*
 from urllib.parse import urlparse
 from urllib.parse import urlencode
 from modules.loading_animation import show_loading_gif
-from modules.bootlogo import show_boot_logo_gif
+from modules.show_gif import show_gif
 import ssl
 import re
 import fnmatch
@@ -1847,7 +1847,7 @@ boot_logo_path = "/home/volumio/NR1-UI/img/bootlogo.gif"
 # sleep(5)
 
 loading_logo_path = "/home/volumio/NR1-UI/img/loading.gif"
-show_boot_logo_gif(oled, boot_logo_path, display_time=10)
+show_gif(oled, boot_logo_path, display_time=10)
 
 # Display the loading logo for 30 seconds
 show_loading_gif(oled, loading_logo_path, display_time=30)

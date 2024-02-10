@@ -2,7 +2,7 @@ import time
 from PIL import Image, ImageSequence
 
 
-def show_boot_logo_gif(oled, gif_path, display_time=10, frame_duration=0.1):
+def show_gif(oled, gif_path, display_time=10, frame_duration=0.1):
     start_time = time.time()
 
     # Load the GIF
