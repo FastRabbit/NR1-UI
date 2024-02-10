@@ -34,7 +34,6 @@ import urllib.request
 from urllib.parse import *  # from urllib import*
 from urllib.parse import urlparse
 from urllib.parse import urlencode
-from modules.loading_sequence import show_loading_sequence
 from modules.loading_animation import show_loading_gif
 from modules.bootlogo import show_boot_logo_gif
 import ssl
@@ -1858,8 +1857,6 @@ show_loading_gif(oled, loading_logo_path, display_time=30)
 if ledActive is True and firstStart is True:
     SysStart()
 
-# Show loading sequence
-# show_loading_sequence(oled, "NR1-UI/img")
 
 # show_logo(oled1BootLogo, oled)
 # show_logo2(oled2BootLogo, oled2)
