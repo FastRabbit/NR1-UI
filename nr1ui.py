@@ -1250,7 +1250,7 @@ class NowPlayingScreen():
                 #
                 #
                 # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                    self.DurationWidth, self.DurationHeight = self.draw.textlength(str(timedelta(seconds=oled.duration)), font=font4)
+                    self.DurationWidth, self.DurationHeight = self.draw.textsize(str(timedelta(seconds=oled.duration)), font=font4)
                     self.draw.text(((256 - self.DurationWidth), Screen7DurationText[1]), str(timedelta(seconds=oled.duration)), font=font4, fill='white')
                     self.draw.rectangle((Screen7barLineX, Screen7barLineThick1, Screen7barLineX + Screen7barwidth, Screen7barLineThick2), outline=Screen7barLineBorder, fill=Screen7barLineFill)
                     self.draw.rectangle((self.bar + Screen7barLineX - Screen7barNibbleWidth, Screen7barThick1, Screen7barX + self.bar + Screen7barNibbleWidth, Screen7barThick2), outline=Screen7barBorder, fill=Screen7barFill)
@@ -1276,7 +1276,7 @@ class NowPlayingScreen():
                 #
                 #
                 # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.ArtistWidth, self.ArtistHeight = self.draw.textlength(TextBaustein, font=font8)
+                self.ArtistWidth, self.ArtistHeight = self.draw.textsize(TextBaustein, font=font8)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -1843,10 +1843,10 @@ RightKnob_Rotation.setCallback(RightKnob_RotaryEvent)
 # /_____/\____/\____/\__/     /_____/\____/\__, /\____/  (_)
 #
 boot_logo_path = "/home/volumio/NR1-UI/img/bootlogo.gif"
-show_gif(oled, boot_logo_path, display_time=5, frame_duration=0.05)
+show_gif(oled, boot_logo_path, display_time=2, frame_duration=0.02)
 
 loading_logo_path = "/home/volumio/NR1-UI/img/loading.gif"
-show_gif(oled, loading_logo_path, display_time=5, frame_duration=0.05)
+show_gif(oled, loading_logo_path, display_time=1, frame_duration=0.02)
 
 
 if ledActive is True and firstStart is True:
