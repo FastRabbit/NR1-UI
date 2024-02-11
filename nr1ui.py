@@ -1742,16 +1742,11 @@ show_gif(oled, loading_logo_path, display_time=1, frame_duration=0.02)
 
 
 if ledActive is True and firstStart is True:
-    SysStart()
-
-
-if ledActive is True and firstStart is True:
     Processor = threading.Thread(target=CPUload, daemon=True)
     Processor.start()
     firstStart = False
 else:
     firstStart = False
-# sleep(2.0)
 sleep(5)
 SetState(STATE_PLAYER)
 # ________________________________________________________________________________________
