@@ -1,10 +1,3 @@
-# config for Standby
-StandbyActive = False
-
-# config for LED
-ledActive = False
-ledTechnology = None
-
 # config for GPIO Buttons
 oledRtrLeft = 13
 oledRtrRight = 5

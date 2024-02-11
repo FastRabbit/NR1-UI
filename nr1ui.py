@@ -454,18 +454,11 @@ def onPushState(data):
             if oled.state == STATE_PLAYER:
                 if oled.playState != 'stop':
                     if newStatus == 'pause':
-                        if ledActive is True:
-                            PlayLEDoff()
                         oled.playstateIcon = oledpauseIcon
                     if newStatus == 'play':
-                        if ledActive is True:
-                            PlayLEDon()
                         oled.playstateIcon = oledplayIcon
                     oled.modal.UpdatePlayingInfo()
                 else:
-                    if ledActive is True:
-                        PlayLEDoff()
-                        StereoLEDoff()
                     ScrollArtistTag = 0
                     ScrollArtistNext = 0
                     ScrollArtistFirstRound = True
@@ -1741,12 +1734,7 @@ loading_logo_path = "/home/volumio/NR1-UI/img/loading.gif"
 show_gif(oled, loading_logo_path, display_time=1, frame_duration=0.02)
 
 
-if ledActive is True and firstStart is True:
-    Processor = threading.Thread(target=CPUload, daemon=True)
-    Processor.start()
-    firstStart = False
-else:
-    firstStart = False
+firstStart = False
 sleep(5)
 SetState(STATE_PLAYER)
 # ________________________________________________________________________________________
