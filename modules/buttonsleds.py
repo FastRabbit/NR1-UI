@@ -4,7 +4,6 @@ import subprocess
 import requests
 import json
 from socketIO_client import SocketIO
-# from modules.button_functions import ButtonC_PushEvent
 
 MCP23017_IODIRA = 0x00  # I/O direction register for Port A
 MCP23017_IODIRB = 0x01  # I/O direction register for Port B

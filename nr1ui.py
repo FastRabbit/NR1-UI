@@ -26,7 +26,6 @@ import smbus
 from modules.pushbutton import PushButton
 from modules.rotaryencoder import RotaryEncoder
 from modules.buttonsleds import ButtonC_PushEvent, update_leds_with_volumio_state, check_buttons_and_update_leds, read_button_matrix, control_leds, debounce_button, activate_play, activate_pause, activate_back, activate_forward, activate_shuffle, activate_repeat, activate_favourites, activate_ButtonC
-# from modules.button_functions import ButtonC_PushEvent
 import uuid
 import numpy as np
 from ConfigurationFiles.PreConfiguration import *
