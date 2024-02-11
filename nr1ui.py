@@ -103,7 +103,7 @@ from luma.core.interface.serial import spi
 from luma.oled.device import ssd1322
 from modules.display1322 import *
 from ConfigurationFiles.ScreenConfig1322 import *
-
+            
 b_obj = BytesIO()
 crl = pycurl.Curl()
 
@@ -530,20 +530,12 @@ class NowPlayingScreen():
         self.width = width
 
     def UpdatePlayingInfo(self):
-        if DisplayTechnology != 'i2c1306':
-            self.image = Image.new('RGB', (self.width, self.height))
-            self.draw = ImageDraw.Draw(self.image)
-        if DisplayTechnology == 'i2c1306':
-            self.image = Image.new('1', (self.width, self.height))
-            self.draw = ImageDraw.Draw(self.image)
+        self.image = Image.new('RGB', (self.width, self.height))
+        self.draw = ImageDraw.Draw(self.image)
 
     def UpdateStandbyInfo(self):
-        if DisplayTechnology != 'i2c1306':
-            self.image = Image.new('RGB', (self.width, self.height))
-            self.draw = ImageDraw.Draw(self.image)
-        if DisplayTechnology == 'i2c1306':
-            self.image = Image.new('1', (self.width, self.height))
-            self.draw = ImageDraw.Draw(self.image)
+        self.image = Image.new('RGB', (self.width, self.height))
+        self.draw = ImageDraw.Draw(self.image)
 
     def DrawOn(self, image):
         global ScrollArtistTag
@@ -1502,10 +1494,7 @@ class NowPlayingScreen():
 # _____________________________________________________________________________________________________________
         elif oled.playState == 'stop':
             self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
-            if DisplayTechnology == 'spi1351' or DisplayTechnology == 'st7735':
-                self.draw.text((oledtext03), oled.time, font=fontClock, fill=(0, 255, 0))
-            else:
-                self.draw.text((oledtext03), oled.time, font=fontClock, fill='white')
+            self.draw.text((oledtext03), oled.time, font=fontClock, fill='white')
             image.paste(self.image, (0, 0))
 
 
@@ -1515,12 +1504,8 @@ class MediaLibrarayInfo():
         self.width = width
 
     def UpdateLibraryInfo(self):
-        if DisplayTechnology != 'i2c1306':
-            self.image = Image.new('RGB', (self.width, self.height))
-            self.draw = ImageDraw.Draw(self.image)
-        if DisplayTechnology == 'i2c1306':
-            self.image = Image.new('1', (self.width, self.height))
-            self.draw = ImageDraw.Draw(self.image)
+        self.image = Image.new('RGB', (self.width, self.height))
+        self.draw = ImageDraw.Draw(self.image)
 
     def DrawOn(self, image):
         self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
