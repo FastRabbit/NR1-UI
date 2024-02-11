@@ -1,10 +1,10 @@
 # Import required libraries
 import smbus
 import time
-import subprocess
 import requests
-import json
-from socketIO_client import SocketIO
+from modules.pushbutton import PushButton
+from modules.rotaryencoder import RotaryEncoder
+
 
 # MCP23017 register definitions
 MCP23017_IODIRA = 0x00  # I/O direction register for Port A
@@ -35,6 +35,33 @@ button_map = [
     [6, 5],  # Row 3
     [8, 7]   # Row 4
 ]
+
+
+ROTARY_ENCODER_LEFT = 13
+ROTARY_ENCODER_RIGHT = 5
+ROTARY_ENCODER_PUSH_BUTTON = 6
+
+
+def check_rotary_encoder(direction):
+    if direction == RotaryEncoder.LEFT:
+        print(f"Rotary Ecoder: Left")
+    if direction == RotaryEncoder.RIGHT:
+        print(f"Rotary Ecoder: Right")
+
+
+print("Configuring Rotary Encoder")
+rotary_encoder = RotaryEncoder(ROTARY_ENCODER_LEFT, ROTARY_ENCODER_RIGHT,  pulses_per_cycle=4)
+rotary_encoder.setCallback(check_rotary_encoder)
+
+
+def check_rotary_button(hold_time: float) -> None:
+    print(f"Rotary Encoder Button Pressed: hold_time = {hold_time}")
+
+
+print("Configuring Rotary Encoder PushButton")
+rotary_push_button = PushButton(ROTARY_ENCODER_PUSH_BUTTON, max_time=2)
+rotary_push_button.setCallback(check_rotary_button)
+
 
 # Function to read button matrix state
 
@@ -85,6 +112,6 @@ def check_buttons_and_update_leds():
 # Initialize prev_button_state
 prev_button_state = [[1] * 2 for _ in range(4)]
 
-# Main loop
+
 while True:
     check_buttons_and_update_leds()
