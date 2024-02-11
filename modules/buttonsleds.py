@@ -66,14 +66,6 @@ def control_leds(led_state):
     print(f"Setting LED state to {led_state}.")
     bus.write_byte_data(MCP23017_ADDRESS, MCP23017_GPIOA, led_state)
 
-# Debounce function
-
-
-def debounce_button(button_state):
-    debounce_time = 0.25  # Adjust this delay as needed
-    time.sleep(debounce_time)
-    new_button_state = read_button_matrix()
-    return new_button_state == button_state
 
 # Volumio Activation Functions (These are your provided functions)
 
@@ -155,12 +147,10 @@ def activate_favourites():
 
 def activate_ButtonC():
     print("ButtonC pressed.")
-    # Call any additional functionality you'd like when ButtonC is pressed.
     ButtonC_PushEvent()
 
 
 def ButtonC_PushEvent():
-    # Your code for what should happen on a ButtonC press
     print("ButtonC action performed")
 
 

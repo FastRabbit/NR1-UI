@@ -3,14 +3,10 @@
 from __future__ import unicode_literals
 import requests
 import os
-import sys
 import time
 import threading
-import signal
 import json
 import pycurl
-import pprint
-import subprocess
 import RPi.GPIO as GPIO
 from time import *
 # from time import sleep
@@ -21,22 +17,17 @@ from datetime import datetime as datetime
 from io import BytesIO
 from PIL import Image
 from PIL import ImageDraw
-from PIL import ImageFont
 import smbus
 from modules.pushbutton import PushButton
 from modules.rotaryencoder import RotaryEncoder
-from modules.buttonsleds import ButtonC_PushEvent, update_leds_with_volumio_state, check_buttons_and_update_leds, read_button_matrix, control_leds, debounce_button, activate_play, activate_pause, activate_back, activate_forward, activate_shuffle, activate_repeat, activate_favourites, activate_ButtonC
-import uuid
+from modules.buttonsleds import ButtonC_PushEvent, update_leds_with_volumio_state, check_buttons_and_update_leds 
 import numpy as np
 from ConfigurationFiles.PreConfiguration import *
 import urllib.request
 from urllib.parse import *  # from urllib import*
-from urllib.parse import urlparse
-from urllib.parse import urlencode
 from modules.show_gif import show_gif
 import ssl
 import re
-import fnmatch
 sleep(5.0)
 
 GPIO.setwarnings(False)
