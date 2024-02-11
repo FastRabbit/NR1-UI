@@ -24,7 +24,7 @@ class RotaryEncoder:
         GPIO.add_event_detect(self.pinA, GPIO.BOTH, callback=self.decodeRotation)
         GPIO.add_event_detect(self.pinB, GPIO.BOTH, callback=self.decodeRotation)
 
-    def decodeRotation(self):
+    def decodeRotation(self, channel):
         self.direction = RotaryEncoder.UNKNOWN
         MSB = int(GPIO.input(self.pinA))
         LSB = int(GPIO.input(self.pinB))
