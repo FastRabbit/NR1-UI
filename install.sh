@@ -38,7 +38,6 @@ sudo pip3 install --upgrade luma.oled
 cd
 
 sed -i 's/\(SpectrumActive = \)\(.*\)/\1True/' /home/volumio/NR1-UI/ConfigurationFiles/PreConfiguration.py
-sed -i 's/\(NR1UIRemoteActive = \)\(.*\)/\1False/' /home/volumio/NR1-UI/ConfigurationFiles/PreConfiguration.py
 
 mkdir /home/volumio/src
 cd

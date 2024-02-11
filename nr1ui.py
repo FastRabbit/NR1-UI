@@ -2,14 +2,12 @@
 
 from __future__ import unicode_literals
 import requests
-import os
 import time
 import threading
 import json
 import pycurl
 import RPi.GPIO as GPIO
 from time import *
-# from time import sleep
 from datetime import timedelta as timedelta
 from threading import Thread
 from socketIO_client import SocketIO
@@ -20,14 +18,11 @@ from PIL import ImageDraw
 import smbus
 from modules.pushbutton import PushButton
 from modules.rotaryencoder import RotaryEncoder
-from modules.buttonsleds import ButtonC_PushEvent, update_leds_with_volumio_state, check_buttons_and_update_leds 
+from modules.buttonsleds import ButtonC_PushEvent, update_leds_with_volumio_state, check_buttons_and_update_leds
 import numpy as np
 from ConfigurationFiles.PreConfiguration import *
-import urllib.request
-from urllib.parse import *  # from urllib import*
+from urllib.parse import *
 from modules.show_gif import show_gif
-import ssl
-import re
 sleep(5.0)
 
 GPIO.setwarnings(False)
@@ -296,60 +291,6 @@ def SetState(status):
 #
 
 
-def JPGPathfinder(String):
-    print('JPGPathfinder')
-    albumstring = String
-    global FullJPGPath
-    try:
-        p1 = 'path=(.+?)&metadata'
-        result = re.search(p1, albumstring)
-        URL = result.group(1)
-        URLPath = "/mnt" + URL + '/'
-        accepted_extensions = ['jpg', 'jpeg', 'gif', 'png', 'bmp']
-        filenames = [fn for fn in os.listdir(URLPath) if fn.split(".")[-1] in accepted_extensions]
-        JPGName = filenames[0]
-        FullJPGPath = URLPath + JPGName
-    except:
-        FullJPGPath = '/home/volumio/NR1-UI/NoCover.bmp'
-    JPGSave(FullJPGPath)
-    print('FullJPGPath: ', FullJPGPath)
-
-
-def JPGSave(Path):
-    print('JPGSave')
-    FullJPGPath = Path
-    img = Image.open(FullJPGPath)     # puts our image to the buffer of the PIL.Image object
-    width, height = img.size
-    asp_rat = width / height
-    new_width = 90
-    new_height = 90
-    new_rat = new_width / new_height
-    img = img.resize((new_width, new_height), Image.ANTIALIAS)
-    img.save('/home/volumio/album.bmp')
-
-
-def JPGSaveURL(link):
-    print('JPGSaveURL')
-    try:
-        httpLink = urllib.parse.quote(link).replace('%3A', ':')
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-        with urllib.request.urlopen(httpLink, context=ctx) as url:
-            with open('temp.jpg', 'wb') as f:
-                f.write(url.read())
-        img = Image.open('temp.jpg')
-    except:
-        img = Image.open('/home/volumio/NR1-UI/NoCover.bmp')
-    width, height = img.size
-    asp_rat = width / height
-    new_width = 90
-    new_height = 90
-    new_rat = new_width / new_height
-    img = img.resize((new_width, new_height), Image.ANTIALIAS)
-    img.save('/home/volumio/album.bmp')
-
-
 def onPushState(data):
     if oled.state != 3:
         global OPDsave
@@ -473,14 +414,6 @@ def onPushState(data):
             oled.seek = data['seek']
         else:
             oled.seek = None
-        if NR1UIRemoteActive is True:
-            if 'albumart' in data:
-                newAlbumart = data['albumart']
-            else:
-                newAlbumart = None
-            if newAlbumart is None:
-                newAlbumart = 'nothing'
-            AlbumArtHTTP = newAlbumart.startswith('http')
 
         if 'album' in data:
             newAlbum = data['album']
@@ -543,15 +476,6 @@ def onPushState(data):
                     ScrollSongNextRound = False
                     SetState(STATE_PLAYER)
                     oled.modal.UpdateStandbyInfo()
-
-        if NR1UIRemoteActive is True:
-            if newAlbumart != oled.activeAlbumart:
-                oled.activeAlbumart = newAlbumart
-                if AlbumArtHTTP is True and newFormat == 'WebRadio':
-                    JPGSaveURL(newAlbumart)
-                else:
-                    albumdecode = urllib.parse.unquote(newAlbumart, encoding='utf-8', errors='replace')
-                    JPGPathfinder(albumdecode)
 
 
 def onPushCollectionStats(data):
