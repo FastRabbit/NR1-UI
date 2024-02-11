@@ -75,30 +75,27 @@ if SpectrumActive is True:
 # \____/\____/_/ /_/_/ /_/\__, /\__,_/_/   \__,_/\__/_/\____/_/ /_/  (_)
 #                       /____/
 #
-if DisplayTechnology == 'spi1322':
-    if SpectrumActive is True:
-        ScreenList = ['Spectrum-Center', 'No-Spectrum', 'Modern', 'VU-Meter-2', 'VU-Meter-Bar']
-    if SpectrumActive is False:
-        ScreenList = ['No-Spectrum']
+if SpectrumActive is True:
+    ScreenList = ['Spectrum-Center', 'No-Spectrum', 'Modern', 'VU-Meter-2', 'VU-Meter-Bar']
+if SpectrumActive is False:
+    ScreenList = ['No-Spectrum']
 
 NowPlayingLayoutSave = open('/home/volumio/NR1-UI/ConfigurationFiles/LayoutSet.txt').readline().rstrip()
 print('Layout selected during setup: ', NowPlayingLayout)
 print('Last manually selected Layout: ', NowPlayingLayoutSave)
 
-if DisplayTechnology == 'spi1322':
-    if NowPlayingLayout not in ScreenList:
+if NowPlayingLayout not in ScreenList:
+    WriteScreen1 = open('/home/volumio/NR1-UI/ConfigurationFiles/LayoutSet.txt', 'w')
+    WriteScreen1.write('No-Spectrum')
+    WriteScreen1.close
+    NowPlayingLayout = 'No-Spectrum'
+
+if NowPlayingLayoutSave != NowPlayingLayout:
+    if NowPlayingLayoutSave not in ScreenList and SpectrumActive is False:
         WriteScreen1 = open('/home/volumio/NR1-UI/ConfigurationFiles/LayoutSet.txt', 'w')
         WriteScreen1.write('No-Spectrum')
         WriteScreen1.close
         NowPlayingLayout = 'No-Spectrum'
-
-if NowPlayingLayoutSave != NowPlayingLayout:
-    if NowPlayingLayoutSave not in ScreenList and SpectrumActive is False:
-        if DisplayTechnology == 'spi1322':
-            WriteScreen1 = open('/home/volumio/NR1-UI/ConfigurationFiles/LayoutSet.txt', 'w')
-            WriteScreen1.write('No-Spectrum')
-            WriteScreen1.close
-            NowPlayingLayout = 'No-Spectrum'
     else:
         NowPlayingLayout = NowPlayingLayoutSave
 
@@ -113,14 +110,13 @@ oledPlayFormatRefreshLoopCount = 3
 # ___/ / /_/ /_/ / /  / /_/_____/ /_/ /  __/ __/ / / / / / /_/ / /_/ / / / (__  )  _
 # /____/\__/\__,_/_/   \__/      \__,_/\___/_/ /_/_/ /_/_/\__/_/\____/_/ /_/____/  (_)
 #
-0
+
 firstStart = True
 
-if DisplayTechnology == 'spi1322':
-    from luma.core.interface.serial import spi
-    from luma.oled.device import ssd1322
-    from modules.display1322 import *
-    from ConfigurationFiles.ScreenConfig1322 import *
+from luma.core.interface.serial import spi
+from luma.oled.device import ssd1322
+from modules.display1322 import *
+from ConfigurationFiles.ScreenConfig1322 import *
 
 b_obj = BytesIO()
 crl = pycurl.Curl()
@@ -133,11 +129,10 @@ STATE_SCREEN_MENU = 3
 
 UPDATE_INTERVAL = 0.034
 
-if DisplayTechnology == 'spi1322' or DisplayTechnology == 'Braun':
-    interface = spi(device=0, port=0)
-    oled = ssd1322(interface, rotate=oledrotation)
-    oled.WIDTH = 256
-    oled.HEIGHT = 64
+interface = spi(device=0, port=0)
+oled = ssd1322(interface, rotate=oledrotation)
+oled.WIDTH = 256
+oled.HEIGHT = 64
 
 oled.state = 'stop'
 oled.stateTimeout = 0
@@ -212,8 +207,7 @@ oled.ScreenTimerStart = True
 oled.ScreenTimerChangeTime = 10.0
 
 
-if DisplayTechnology == 'spi1322':
-    image = Image.new('RGB', (oled.WIDTH, oled.HEIGHT))  # for Pixelshift: (oled.WIDTH + 4, oled.HEIGHT + 4))
+image = Image.new('RGB', (oled.WIDTH, oled.HEIGHT))  # for Pixelshift: (oled.WIDTH + 4, oled.HEIGHT + 4))
 oled.clear()
 # ________________________________________________________________________________________
 # ________________________________________________________________________________________
@@ -224,29 +218,28 @@ oled.clear()
 # / __/ / /_/ / / / / /_(__  )  _
 # /_/    \____/_/ /_/\__/____/  (_)
 #
-if DisplayTechnology == 'spi1322':
-    font = load_font('NotoSansTC-Bold.otf', 18)  # used for Artist ('Oxanium-Bold.ttf', 20)
-    font2 = load_font('NotoSansTC-Light.otf', 12)  # used for all menus
-    font3 = load_font('NotoSansTC-Regular.otf', 16)  # used for Song ('Oxanium-Regular.ttf', 18)
-    font4 = load_font('Oxanium-Medium.ttf', 12)  # used for Format/Smplerate/Bitdepth
-    font5 = load_font('NotoSansTC-Medium.otf', 12)  # used for Artist / Screen5
-    font6 = load_font('NotoSansTC-Regular.otf', 12)  # used for Song / Screen5
-    font7 = load_font('Oxanium-Light.ttf', 10)  # used for all other / Screen5
-    font8 = load_font('NotoSansTC-Regular.otf', 10)  # used for Song / Screen5
-    font9 = load_font('NotoSansTC-Bold.otf', 16)  # used for Artist ('Oxanium-Bold.ttf', 20)
-    font10 = load_font('NotoSansTC-Regular.otf', 14)  # used for Artist ('Oxanium-Bold.ttf', 20)
-    font11 = load_font('Oxanium-Regular.ttf', 10)  # used for specs in VUmeter2
-    font12 = load_font('Oxanium-Regular.ttf', 12)  # used for Artist/Song VU Meter2
-    font13 = load_font('NotoSansTC-Regular.otf', 14)  # used for Artist ('Oxanium-Bold.ttf', 20)
-    font14 = load_font('NotoSansTC-Light.otf', 12)  # used for Artist ('Oxanium-Bold.ttf', 20)
-    mediaicon = load_font('fa-solid-900.ttf', 10)  # used for icon in Media-library info
-    labelfont = load_font('entypo.ttf', 12)  # used for Menu-icons
-    iconfontBottom = load_font('entypo.ttf', 10)  # used for icons under the screen / button layout
-    labelfontfa = load_font('fa-solid-900.ttf', 12)  # used for icons under the screen / button layout
-    labelfontfa2 = load_font('fa-solid-900.ttf', 14)
-    fontClock = load_font('DSG.ttf', 45)  # used for clock
-    fontDate = load_font('Oxanium-Light.ttf', 12)  # used for Date 'DSEG7Classic-Regular.ttf'
-    fontIP = load_font('Oxanium-Light.ttf', 12)  # used for IP 'DSEG7Classic-Regular.ttf'
+font = load_font('NotoSansTC-Bold.otf', 18)  # used for Artist ('Oxanium-Bold.ttf', 20)
+font2 = load_font('NotoSansTC-Light.otf', 12)  # used for all menus
+font3 = load_font('NotoSansTC-Regular.otf', 16)  # used for Song ('Oxanium-Regular.ttf', 18)
+font4 = load_font('Oxanium-Medium.ttf', 12)  # used for Format/Smplerate/Bitdepth
+font5 = load_font('NotoSansTC-Medium.otf', 12)  # used for Artist / Screen5
+font6 = load_font('NotoSansTC-Regular.otf', 12)  # used for Song / Screen5
+font7 = load_font('Oxanium-Light.ttf', 10)  # used for all other / Screen5
+font8 = load_font('NotoSansTC-Regular.otf', 10)  # used for Song / Screen5
+font9 = load_font('NotoSansTC-Bold.otf', 16)  # used for Artist ('Oxanium-Bold.ttf', 20)
+font10 = load_font('NotoSansTC-Regular.otf', 14)  # used for Artist ('Oxanium-Bold.ttf', 20)
+font11 = load_font('Oxanium-Regular.ttf', 10)  # used for specs in VUmeter2
+font12 = load_font('Oxanium-Regular.ttf', 12)  # used for Artist/Song VU Meter2
+font13 = load_font('NotoSansTC-Regular.otf', 14)  # used for Artist ('Oxanium-Bold.ttf', 20)
+font14 = load_font('NotoSansTC-Light.otf', 12)  # used for Artist ('Oxanium-Bold.ttf', 20)
+mediaicon = load_font('fa-solid-900.ttf', 10)  # used for icon in Media-library info
+labelfont = load_font('entypo.ttf', 12)  # used for Menu-icons
+iconfontBottom = load_font('entypo.ttf', 10)  # used for icons under the screen / button layout
+labelfontfa = load_font('fa-solid-900.ttf', 12)  # used for icons under the screen / button layout
+labelfontfa2 = load_font('fa-solid-900.ttf', 14)
+fontClock = load_font('DSG.ttf', 45)  # used for clock
+fontDate = load_font('Oxanium-Light.ttf', 12)  # used for Date 'DSEG7Classic-Regular.ttf'
+fontIP = load_font('Oxanium-Light.ttf', 12)  # used for IP 'DSEG7Classic-Regular.ttf'
 
 # ________________________________________________________________________________________
 # ________________________________________________________________________________________
@@ -660,7 +653,7 @@ class NowPlayingScreen():
 #    /_/                                           /____/
 # __________________________________________________________________________________________________________
 
-        if NowPlayingLayout == 'Spectrum-Center' and newStatus != 'stop':  # and DisplayTechnology == 'spi1322'
+        if NowPlayingLayout == 'Spectrum-Center' and newStatus != 'stop':
 
             if newStatus != 'stop' and oled.duration != None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
@@ -841,7 +834,7 @@ class NowPlayingScreen():
 
                 image.paste(self.image, (0, 0))
 
-        if NowPlayingLayout == 'No-Spectrum' and newStatus != 'stop':  # and DisplayTechnology == 'spi1322'
+        if NowPlayingLayout == 'No-Spectrum' and newStatus != 'stop':
 
             if newStatus != 'stop' and oled.duration != None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
@@ -1043,7 +1036,7 @@ class NowPlayingScreen():
                     self.draw.text((Screen4text68), self.volume, font=font4, fill='white')
                 image.paste(self.image, (0, 0))
 
-        if NowPlayingLayout == 'Modern' and newStatus != 'stop':  # and DisplayTechnology == 'spi1322'
+        if NowPlayingLayout == 'Modern' and newStatus != 'stop':
 
             if newStatus != 'stop' and oled.duration != None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
@@ -1197,7 +1190,7 @@ class NowPlayingScreen():
                 self.draw.line((184, 36, 190, 47), fill='white', width=1)
                 image.paste(self.image, (0, 0))
 
-        if NowPlayingLayout == 'VU-Meter-2' and newStatus != 'stop':  # and DisplayTechnology == 'spi1322'
+        if NowPlayingLayout == 'VU-Meter-2' and newStatus != 'stop':
             if newStatus != 'stop' and oled.duration != None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
                 logoImage = Image.open('/home/volumio/NR1-UI/img/vu2.png').convert('RGB')
@@ -1315,7 +1308,7 @@ class NowPlayingScreen():
                         self.draw.line(Screen7rightVUcoordinates[rightVU1], fill='white', width=2)
                 image.paste(self.image, (0, 0))
 
-        if NowPlayingLayout == 'VU-Meter-Bar' and newStatus != 'stop':  # and DisplayTechnology == 'spi1322'
+        if NowPlayingLayout == 'VU-Meter-Bar' and newStatus != 'stop':
             global spectrumPeaksL
             global spectrumPeaksR
             if newStatus != 'stop' and oled.duration != None:
