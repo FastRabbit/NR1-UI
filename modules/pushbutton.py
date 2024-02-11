@@ -7,7 +7,7 @@ class PushButton:
 
     def __init__(self, gpioPin, min_time=0.1, max_time=0.1):
         self.pin = gpioPin
-        self.callbackFunction = False
+        self.callbackFunction = None
         self.minimum_time = min_time
         self.maximum_time = max(max_time, min_time)
 
