@@ -5,7 +5,6 @@ oledRtrBtn = 6
 
 
 # config for Display:
-DisplayTechnology = "spi1322"
 NowPlayingLayout = "Spectrum-Center"
 oledrotation = 2
 

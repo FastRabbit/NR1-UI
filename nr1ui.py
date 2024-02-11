@@ -1674,6 +1674,7 @@ button_action_map = {
 def RightKnob_RotaryEvent(dir):
     global emit_track
     oled.stateTimeout = 6.0
+    print(f"RightKnob_RotaryEvent State: {oled.state}")
     if oled.state == STATE_PLAYER:
         SetState(STATE_QUEUE_MENU)
     elif oled.state == STATE_QUEUE_MENU and dir == RotaryEncoder.LEFT:
