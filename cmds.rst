@@ -3,6 +3,11 @@
 
 git clone http://github.com/theshepherdmatt/NR1-UI.git
 
+git clone https://github.com/FastRabbit/NR1-UI
+
+
+rm -rf NR1-UI/
+
 # install and compile
 bash NR1-UI/install.sh
 
