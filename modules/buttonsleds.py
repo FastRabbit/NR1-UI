@@ -186,23 +186,6 @@ def check_buttons_and_update_leds(button_c_callback=None):
     global prev_button_state  # Use the global variable prev_button_state
     button_matrix = read_button_matrix()
 
-    for row in range(4):  # Assuming 4 rows
-        for col in range(2):  # Assuming 2 columns (but swapped)
-            button_id = button_map[row][col]
-            current_button_state = button_matrix[row][col]
-
-            # Check for rising edge (button press)
-            if current_button_state == 0 and prev_button_state[row][col] != current_button_state:
-                print(f"Button {button_id} pressed")
-
-                # Check if the pressed button is ButtonC, whose ID is 8
-                if button_id == 8:
-                    if button_c_callback is not None:
-                        # Call the ButtonC_PushEvent function passed as a parameter
-                        button_c_callback()
-                    else:
-                        print("ButtonC callback is not set.")
-
     # Define the button actions here, as an example
     button_action_map = {
         1: activate_play,
@@ -224,6 +207,11 @@ def check_buttons_and_update_leds(button_c_callback=None):
             # Check for rising edge (button press)
             if current_button_state == 0 and prev_button_state[row][col] != current_button_state:
                 print(f"Button {button_id} pressed")
+
+                if button_id == 8:
+                    if button_c_callback is not None:
+                        # Call the injected ButtonC_PushEvent function passed as a parameter
+                        button_c_callback()
 
                 # Call the function associated with the button_id from the map
                 if button_id in button_action_map:
