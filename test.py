@@ -29,14 +29,7 @@ bus.write_byte_data(MCP23017_ADDRESS, MCP23017_GPPUB, 0x3C)
 bus.write_byte_data(MCP23017_ADDRESS, MCP23017_IODIRA, 0x00)
 print("MCP23017 ports configured.")
 
-# Define button matrix mapping (4 rows, 2 columns)
-button_map = [
-    [2, 1],  # Row 1
-    [4, 3],  # Row 2
-    [6, 5],  # Row 3
-    [8, 7]   # Row 4
-]
-
+prev_buttons = [0 for _ in range(8)]
 
 ROTARY_ENCODER_LEFT = 13
 ROTARY_ENCODER_RIGHT = 5
@@ -51,7 +44,7 @@ def check_rotary_encoder(direction):
 
 
 print("Configuring Rotary Encoder")
-rotary_encoder = RotaryEncoder(ROTARY_ENCODER_LEFT, ROTARY_ENCODER_RIGHT,  pulses_per_cycle=4)
+rotary_encoder = RotaryEncoder(ROTARY_ENCODER_LEFT, ROTARY_ENCODER_RIGHT, pulses_per_cycle=4)
 rotary_encoder.setCallback(check_rotary_encoder)
 
 
@@ -66,14 +59,15 @@ rotary_push_button.setCallback(check_rotary_button)
 
 def read_button_matrix():
     button_matrix_state = [0 for _ in range(8)]
-
     for column in range(2):
         bus.write_byte_data(MCP23017_ADDRESS, MCP23017_GPIOB, ~(1 << column) & 0x03)
+        time.sleep(0.005)
         row_state = bus.read_byte_data(MCP23017_ADDRESS, MCP23017_GPIOB) & 0x3C
-
         for row in range(4):
-            button_matrix_state[(row + 1) * column] = (row_state >> (row + 2)) & 1
-
+            state = (row_state >> (row + 2)) & 1
+            index = row * 2 + 1 - column
+            # print(f"index {index} state {state}")
+            button_matrix_state[index] = state
     return button_matrix_state
 
 
@@ -82,25 +76,19 @@ def control_leds(led_state):
     bus.write_byte_data(MCP23017_ADDRESS, MCP23017_GPIOA, led_state)
 
 
-prev_buttons = [0 for _ in range(8)]
-
-
 def check_buttons_and_update_leds() -> None:
     global prev_buttons
 
     buttons = read_button_matrix()
-
-    print(f"buttons {buttons}")
+    # print(f"buttons {buttons}")
     for button_id in range(8):
         current_button_state = buttons[button_id]
         if current_button_state == 0 and prev_buttons[button_id] != current_button_state:
             print(f"Button {button_id} pressed")
             led_state = 1 << (button_id)
             control_leds(led_state)
-
         prev_buttons[button_id] = current_button_state
-
-        time.sleep(2)  # Debounce delay
+        time.sleep(0.05)
 
 
 while True:
