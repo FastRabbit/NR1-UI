@@ -37,7 +37,7 @@ volumioIO = SocketIO('localhost', 3000)
 
 print("Connected to Volumio over SocketIO.")
 
-prev_button_state = 0  # Initialize a variable to hold the previous button state
+prev_button_state = [0 for _ in range(8)]
 
 # 4 rows, 2 columns with swapped column numbers
 button_map = [
@@ -49,7 +49,7 @@ button_map = [
 
 
 def read_button_matrix():
-    button_matrix_state = [[0] * 2 for _ in range(4)]  # Create a 4x2 matrix filled with zeros
+    button_matrix_state = [0 for _ in range(8)]
     for column in range(2):
         # Drive one column low at a time (for PB0 and PB1)
         bus.write_byte_data(MCP23017_ADDRESS, MCP23017_GPIOB, ~(1 << column) & 0x03)
@@ -58,7 +58,7 @@ def read_button_matrix():
         # Update the button matrix state
         for row in range(4):
             # Shift row_state right by 2 to align with PB2 starting position
-            button_matrix_state[row][column] = (row_state >> (row + 2)) & 1
+            button_matrix_state[(column + 1) * row] = (row_state >> (row + 2)) & 1
     return button_matrix_state
 
 
@@ -178,51 +178,38 @@ def update_leds_with_volumio_state():
         control_leds(led_pattern)
 
 
-# Initialize prev_button_state at the top level of your script
-prev_button_state = [[1] * 2 for _ in range(4)]  # Default to 'not pressed' state
-
-
 def check_buttons_and_update_leds(button_c_callback=None):
     global prev_button_state  # Use the global variable prev_button_state
-    button_matrix = read_button_matrix()
+    buttons = read_button_matrix()
 
     # Define the button actions here, as an example
     button_action_map = {
-        1: activate_play,
-        2: activate_pause,
-        3: activate_back,
-        4: activate_forward,
-        5: activate_shuffle,
-        6: activate_repeat,
-        7: activate_favourites,
-        8: activate_ButtonC,
+        0: activate_play,
+        1: activate_pause,
+        2: activate_back,
+        3: activate_forward,
+        4: activate_shuffle,
+        5: activate_repeat,
+        6: activate_favourites,
+        7: activate_ButtonC,
     }
 
     # Check if a button is pressed
-    for row in range(4):  # Assuming 4 rows
-        for col in range(2):  # Assuming 2 columns
-            button_id = button_map[row][col]
-            current_button_state = button_matrix[row][col]
+    for button_id in range(8):
+        current_button_state = buttons[button_id]
+        if current_button_state == 0 and prev_button_state[button_id] != current_button_state:
+            print(f"Button {button_id} pressed")
 
-            # Check for rising edge (button press)
-            if current_button_state == 0 and prev_button_state[row][col] != current_button_state:
-                print(f"Button {button_id} pressed")
+            # Call the injected ButtonC_PushEvent function passed as a parameter
+            if button_id == 7 and button_c_callback is not None:
+                button_c_callback()
 
-                if button_id == 8:
-                    if button_c_callback is not None:
-                        # Call the injected ButtonC_PushEvent function passed as a parameter
-                        button_c_callback()
-
-                # Call the function associated with the button_id from the map
-                if button_id in button_action_map:
-                    button_action_map[button_id]()
-
-                swapped_col = 1 - col  # Swap 0 to 1 and 1 to 0
-                led_state = 1 << (row * 2 + swapped_col)
-                control_leds(led_state)
+            # Call the function associated with the button_id from the map
+            if button_id in button_action_map:
+                button_action_map[button_id]()
 
             # Update the previous button state
-            prev_button_state[row][col] = current_button_state
+            prev_button_state[button_id]
 
-            # Wait a bit before checking again to debounce
+    # Wait a bit before checking again to debounce
     time.sleep(0.1)
