@@ -18,7 +18,8 @@ from PIL import ImageDraw
 import smbus
 from modules.pushbutton import PushButton
 from modules.rotaryencoder import RotaryEncoder
-from modules.buttonsleds import ButtonC_PushEvent, update_leds_with_volumio_state, check_buttons_and_update_leds
+# from modules.buttonsleds import ButtonC_PushEvent, update_leds_with_volumio_state, check_buttons_and_update_leds
+from modules.buttonsleds import update_leds_with_volumio_state, check_buttons_and_update_leds
 import numpy as np
 from ConfigurationFiles.PreConfiguration import *
 from urllib.parse import *
