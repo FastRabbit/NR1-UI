@@ -1,4 +1,5 @@
 # Import required libraries
+from nr1ui import ButtonC_PushEvent
 import smbus
 import time
 import requests
@@ -63,54 +64,43 @@ rotary_push_button = PushButton(ROTARY_ENCODER_PUSH_BUTTON, max_time=2)
 rotary_push_button.setCallback(check_rotary_button)
 
 
-# Function to read button matrix state
-
-
 def read_button_matrix():
-    button_matrix_state = [[0] * 2 for _ in range(4)]
+    button_matrix_state = [0 for _ in range(8)]
 
     for column in range(2):
         bus.write_byte_data(MCP23017_ADDRESS, MCP23017_GPIOB, ~(1 << column) & 0x03)
         row_state = bus.read_byte_data(MCP23017_ADDRESS, MCP23017_GPIOB) & 0x3C
 
         for row in range(4):
-            button_matrix_state[row][column] = (row_state >> (row + 2)) & 1
+            button_matrix_state[(row + 1) * column] = (row_state >> (row + 2)) & 1
 
     return button_matrix_state
-
-# Function to control LEDs
 
 
 def control_leds(led_state):
     print(f"Setting LED state to {led_state}.")
     bus.write_byte_data(MCP23017_ADDRESS, MCP23017_GPIOA, led_state)
 
-# Function to check buttons and update LED states
+
+prev_buttons = [0 for _ in range(8)]
 
 
-def check_buttons_and_update_leds():
-    global prev_button_state  # Use the global variable prev_button_state
+def check_buttons_and_update_leds() -> None:
+    global prev_buttons
 
-    button_matrix = read_button_matrix()
-    for row in range(4):  # Assuming 4 rows
-        for col in range(2):  # Assuming 2 columns
-            button_id = button_map[row][col]
-            current_button_state = button_matrix[row][col]
+    buttons = read_button_matrix()
 
-            # Check for rising edge (button press)
-            if current_button_state == 0 and prev_button_state[row][col] != current_button_state:
-                print(f"Button {button_id} pressed")
-                led_state = 1 << (button_id - 1)
-                control_leds(led_state)
+    print(f"buttons {buttons}")
+    for button_id in range(8):
+        current_button_state = buttons[button_id]
+        if current_button_state == 0 and prev_buttons[button_id] != current_button_state:
+            print(f"Button {button_id} pressed")
+            led_state = 1 << (button_id)
+            control_leds(led_state)
 
-            # Update the previous button state
-            prev_button_state[row][col] = current_button_state
+        prev_buttons[button_id] = current_button_state
 
-    time.sleep(0.1)  # Debounce delay
-
-
-# Initialize prev_button_state
-prev_button_state = [[1] * 2 for _ in range(4)]
+        time.sleep(2)  # Debounce delay
 
 
 while True:
