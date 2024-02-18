@@ -1,6 +1,10 @@
 #!/usr/bin/python3
 
 from __future__ import unicode_literals
+from ConfigurationFiles.ScreenConfig1322 import *
+from modules.display1322 import *
+from luma.oled.device import ssd1322
+from luma.core.interface.serial import spi
 import requests
 import time
 import threading
@@ -100,11 +104,7 @@ oledPlayFormatRefreshLoopCount = 3
 
 firstStart = True
 
-from luma.core.interface.serial import spi
-from luma.oled.device import ssd1322
-from modules.display1322 import *
-from ConfigurationFiles.ScreenConfig1322 import *
-            
+
 b_obj = BytesIO()
 crl = pycurl.Curl()
 
@@ -946,11 +946,11 @@ class NowPlayingScreen():
                 data3 = cava_fifo.readline().strip().split(';')
                 data2 = cava2_fifo.readline().strip().split(';')
                 TextBaustein = oled.activeArtist + ' - ' + oled.activeSong
-                #
+
                 #
                 #
                 # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                # self.ArtistWidth, self.ArtistHeight = self.draw.textsize(TextBaustein, font=font6)
+                self.ArtistWidth, self.ArtistHeight = self.draw.textsize(TextBaustein, font=font6)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:

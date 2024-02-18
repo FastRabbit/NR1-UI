@@ -40,7 +40,7 @@ print("Connected to Volumio over SocketIO.")
 prev_buttons = [0 for _ in range(8)]
 
 
-def read_button_matrix() -> list[int]:
+def read_button_matrix():
     button_matrix_state = [0 for _ in range(8)]
     for column in range(2):
         bus.write_byte_data(MCP23017_ADDRESS, MCP23017_GPIOB, ~(1 << column) & 0x03)
