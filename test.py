@@ -55,7 +55,7 @@ rotary_push_button = PushButton(ROTARY_ENCODER_PUSH_BUTTON, max_time=2)
 rotary_push_button.setCallback(check_rotary_button)
 
 
-def read_button_matrix():
+def read_button_matrix() -> list[int]:
     button_matrix_state = [0 for _ in range(8)]
     for column in range(2):
         bus.write_byte_data(MCP23017_ADDRESS, MCP23017_GPIOB, ~(1 << column) & 0x03)
