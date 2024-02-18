@@ -949,7 +949,7 @@ class NowPlayingScreen():
                 #
                 #
                 # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.ArtistWidth, self.ArtistHeight = self.draw.textsize(TextBaustein, font=font6)
+                # self.ArtistWidth, self.ArtistHeight = self.draw.textsize(TextBaustein, font=font6)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:

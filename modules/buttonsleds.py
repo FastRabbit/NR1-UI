@@ -63,7 +63,7 @@ def read_button_matrix():
 
 
 def control_leds(led_state):
-    print(f"Setting LED state to {led_state}.")
+    # print(f"Setting LED state to {led_state}.")
     bus.write_byte_data(MCP23017_ADDRESS, MCP23017_GPIOA, led_state)
 
 
@@ -147,15 +147,11 @@ def activate_favourites():
 
 def activate_ButtonC():
     print("ButtonC pressed.")
-    ButtonC_PushEvent()
-
-
-def ButtonC_PushEvent():
     print("ButtonC action performed")
 
 
 def get_volumio_state():
-    print("Fetching Volumio state.")
+    # print("Fetching Volumio state.")
     try:
         response = requests.get("http://localhost:3000/api/v1/getState")
         response.raise_for_status()
@@ -200,12 +196,12 @@ def check_buttons_and_update_leds(button_c_callback=None):
                 print(f"Button {button_id} pressed")
 
                 # Check if the pressed button is ButtonC, whose ID is 8
-                if button_id == 8 and button_c_callback is not None:
-                    # Call the ButtonC_PushEvent function passed as a parameter
-                    button_c_callback()
-                    button_c_callback
-                else:
-                    print("ButtonC callback is not set.")
+                if button_id == 8:
+                    if button_c_callback is not None:
+                        # Call the ButtonC_PushEvent function passed as a parameter
+                        button_c_callback()
+                    else:
+                        print("ButtonC callback is not set.")
 
     # Define the button actions here, as an example
     button_action_map = {
