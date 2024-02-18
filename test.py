@@ -1,8 +1,6 @@
 # Import required libraries
-from nr1ui import ButtonC_PushEvent
 import smbus
 import time
-import requests
 from modules.pushbutton import PushButton
 from modules.rotaryencoder import RotaryEncoder
 
