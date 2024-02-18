@@ -1,7 +1,7 @@
 # config for GPIO Buttons
-oledRtrLeft = 13
-oledRtrRight = 5
-oledRtrBtn = 6
+ENCODER_LEFT_IO = 13
+ENCODER_RIGHT_IO = 5
+ENCODER_BUTTON_IO = 6
 
 
 # config for Display:

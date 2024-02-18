@@ -7,7 +7,6 @@ from luma.oled.device import ssd1322
 from luma.core.interface.serial import spi
 import requests
 import time
-import threading
 import json
 import pycurl
 import RPi.GPIO as GPIO
@@ -22,7 +21,6 @@ from PIL import ImageDraw
 import smbus
 from modules.pushbutton import PushButton
 from modules.rotaryencoder import RotaryEncoder
-# from modules.buttonsleds import ButtonC_PushEvent, update_leds_with_volumio_state, check_buttons_and_update_leds
 from modules.buttonsleds import update_leds_with_volumio_state, check_buttons_and_update_leds
 import numpy as np
 from ConfigurationFiles.PreConfiguration import *
@@ -102,11 +100,6 @@ oledPlayFormatRefreshLoopCount = 3
 # /____/\__/\__,_/_/   \__/      \__,_/\___/_/ /_/_/ /_/_/\__/_/\____/_/ /_/____/  (_)
 #
 
-firstStart = True
-
-
-b_obj = BytesIO()
-crl = pycurl.Curl()
 
 STATE_NONE = -1
 STATE_PLAYER = 0
@@ -138,8 +131,7 @@ oled.libraryFull = []
 oled.libraryNames = []
 oled.volumeControlDisabled = True
 oled.volume = 100
-now = datetime.now()  # current date and time
-oled.time = now.strftime("%H:%M")  # resolves time as HH:MM:SS eg. 14:33:15
+oled.time = datetime.now().strftime("%H:%M")  # resolves time as HH:MM:SS eg. 14:33:15
 oled.date = ""  # resolves time as dd.mm.YYYY eg. 17.04.2020
 oled.IP = ''
 emit_track = False
@@ -186,16 +178,16 @@ oled.bitrate = ''
 oled.repeatonce = False
 oled.shuffle = False
 oled.mute = False
-VOLUME_DT = 5
 oled.ScreenTimer10 = False
 oled.ScreenTimer20 = False
 oled.ScreenTimerStamp = 0.0
 oled.ScreenTimerStart = True
 oled.ScreenTimerChangeTime = 10.0
 
-
 image = Image.new('RGB', (oled.WIDTH, oled.HEIGHT))  # for Pixelshift: (oled.WIDTH + 4, oled.HEIGHT + 4))
+
 oled.clear()
+
 # ________________________________________________________________________________________
 # ________________________________________________________________________________________
 #
@@ -259,6 +251,7 @@ def display_update_service():
         cimg = image.crop((0, 0, oled.WIDTH, oled.HEIGHT))
         oled.display(cimg)
         sleep(UPDATE_INTERVAL)
+
 # ________________________________________________________________________________________
 # ________________________________________________________________________________________
 #
@@ -271,8 +264,8 @@ def display_update_service():
 #
 
 
-def SetState(status):
-    oled.state = status
+def SetState(state):
+    oled.state = state
     if oled.state == STATE_PLAYER:
         oled.modal = NowPlayingScreen(oled.HEIGHT, oled.WIDTH)
     elif oled.state == STATE_QUEUE_MENU:
@@ -281,6 +274,7 @@ def SetState(status):
         oled.modal = MediaLibrarayInfo(oled.HEIGHT, oled.WIDTH)
     elif oled.state == STATE_SCREEN_MENU:
         oled.modal = ScreenSelectMenu(oled.HEIGHT, oled.WIDTH)
+
 # ________________________________________________________________________________________
 # ________________________________________________________________________________________
 #
@@ -293,7 +287,7 @@ def SetState(status):
 
 
 def onPushState(data):
-    if oled.state != 3:
+    if oled.state != STATE_SCREEN_MENU:
         global OPDsave
         global newStatus  # global definition for newStatus, used at the end-loop to update standby
         global newSong
@@ -1720,35 +1714,17 @@ RightKnob_Push.setCallback(RightKnob_PushEvent)
 RightKnob_Rotation = RotaryEncoder(oledRtrLeft, oledRtrRight, pulses_per_cycle=4)
 RightKnob_Rotation.setCallback(RightKnob_RotaryEvent)
 
-# ________________________________________________________________________________________
-# ________________________________________________________________________________________
-#
-#    ____              __        __
-#   / __ )____  ____  / /_      / /   ____  ____ _____     _
-#  / __  / __ \/ __ \/ __/_____/ /   / __ \/ __ `/ __ \   (_)
-# / /_/ / /_/ / /_/ / /_/_____/ /___/ /_/ / /_/ / /_/ /  _
-# /_____/\____/\____/\__/     /_____/\____/\__, /\____/  (_)
-#
+
 boot_logo_path = "/home/volumio/NR1-UI/img/bootlogo.gif"
 show_gif(oled, boot_logo_path, display_time=2, frame_duration=0.02)
 
 loading_logo_path = "/home/volumio/NR1-UI/img/loading.gif"
-show_gif(oled, loading_logo_path, display_time=1, frame_duration=0.02)
+show_gif(oled, loading_logo_path, display_time=2, frame_duration=0.02)
 
 
-firstStart = False
 sleep(5)
 SetState(STATE_PLAYER)
-# ________________________________________________________________________________________
-# ________________________________________________________________________________________
-#
-#   __  __          __      __          ________                        __
-#  / / / /___  ____/ /___ _/ /____     /_  __/ /_  ________  ____ _____/ /____   _
-# / / / / __ \/ __  / __ `/ __/ _ \     / / / __ \/ ___/ _ \/ __ `/ __  / ___/  (_)
-# / /_/ / /_/ / /_/ / /_/ / /_/  __/    / / / / / / /  /  __/ /_/ / /_/ (__  )  _
-# \____/ .___/\__,_/\__,_/\__/\___/    /_/ /_/ /_/_/   \___/\__,_/\__,_/____/  (_)
-#    /_/
-#
+
 updateThread = Thread(target=display_update_service)
 updateThread.daemon = True
 updateThread.start()
@@ -1787,17 +1763,18 @@ InfoTag = 0  # helper for missing Artist/Song when changing sources
 def PlaypositionHelper():
     while True:
         volumioIO.emit('getState')
-        now = datetime.now()
-        oled.date = now.strftime("%d.%m.%Y")
+        oled.date = datetime.now().strftime("%d.%m.%Y")
         sleep(1.0)
 
 
-PlayPosHelp = threading.Thread(target=PlaypositionHelper, daemon=True)
+PlayPosHelp = Thread(target=PlaypositionHelper, daemon=True)
 PlayPosHelp.start()
 
 while True:
+
     update_leds_with_volumio_state()
     check_buttons_and_update_leds(ButtonC_PushEvent)
+
     if emit_track and oled.stateTimeout < 4.5:
         emit_track = False
         try:
@@ -1810,45 +1787,47 @@ while True:
         volumioIO.emit('play', {'value': oled.selQueue})
     sleep(0.1)
 
+    if oled.state == STATE_PLAYER:
 
-# this is the loop to push the actual time every 0.1sec to the "Standby-Screen"
-    if oled.state == STATE_PLAYER and newStatus == 'stop' and oled.ShutdownFlag is False:
-        InfoTag = 0  # resets the InfoTag helper from artist/song update loop
-        oled.state = 0
-        oled.time = strftime("%H:%M")
-        SetState(STATE_PLAYER)
-        oled.modal.UpdateStandbyInfo()
-        sleep(0.2)
+        # this is the loop to push the actual time every 0.1sec to the "Standby-Screen"
+        if newStatus == 'stop' and oled.ShutdownFlag is False:
+            InfoTag = 0  # resets the InfoTag helper from artist/song update loop
+            oled.state = 0
+            oled.time = strftime("%H:%M")
+            SetState(STATE_PLAYER)
+            oled.modal.UpdateStandbyInfo()
+            sleep(0.2)
 
-# if playback is paused, here is defined when the Player goes back to "Standby"/Stop
-    if oled.state == STATE_PLAYER and newStatus == 'pause' and varcanc is True:
-        secvar = int(round(time()))
-        varcanc = False
-    elif oled.state == STATE_PLAYER and newStatus == 'pause' and int(round(time())) - secvar > oledPause2StopTime:
-        varcanc = True
-        volumioIO.emit('stop')
-        oled.modal.UpdateStandbyInfo()
-        secvar = 0.0
+        # if playback is paused, here is defined when the Player goes back to "Standby"/Stop
+        if newStatus == 'pause' and varcanc is True:
+            secvar = int(round(time()))
+            varcanc = False
+        elif newStatus == 'pause' and int(round(time())) - secvar > oledPause2StopTime:
+            varcanc = True
+            volumioIO.emit('stop')
+            oled.modal.UpdateStandbyInfo()
+            secvar = 0.0
 
-    if oled.state == STATE_PLAYER and newStatus == 'play' and oled.ScreenTimerStart is True:
-        oled.ScreenTimerStamp = int(round(time()))
-        oled.ScreenTimerStart = False
-        oled.ScreenTimer10 = True
+        if newStatus == 'play' and oled.ScreenTimerStart is True:
+            oled.ScreenTimerStamp = int(round(time()))
+            oled.ScreenTimerStart = False
+            oled.ScreenTimer10 = True
 
-    if oled.state == STATE_PLAYER and newStatus != 'stop':
-        if oled.ScreenTimer10 is True and (int(round(time())) - oled.ScreenTimerStamp > oled.ScreenTimerChangeTime):
-            oled.ScreenTimerChangeTime
+        if newStatus != 'stop':
+            if oled.ScreenTimer10 is True and (int(round(time())) - oled.ScreenTimerStamp > oled.ScreenTimerChangeTime):
+                oled.ScreenTimerChangeTime
+                oled.ScreenTimer10 = False
+                oled.ScreenTimer20 = True
+            if oled.ScreenTimer20 is True and ((int(round(time())) - oled.ScreenTimerStamp) > (oled.ScreenTimerChangeTime * 2)):
+                oled.ScreenTimer20 = False
+                oled.ScreenTimerStart = True
+                oled.ScreenTimerStamp = 0.0
+                oled.ScreenTimer10 = True
+
+        if oled.state != STATE_PLAYER:
             oled.ScreenTimer10 = False
-            oled.ScreenTimer20 = True
-        if oled.ScreenTimer20 is True and ((int(round(time())) - oled.ScreenTimerStamp) > (oled.ScreenTimerChangeTime * 2)):
             oled.ScreenTimer20 = False
             oled.ScreenTimerStart = True
             oled.ScreenTimerStamp = 0.0
-            oled.ScreenTimer10 = True
 
-    if oled.state != STATE_PLAYER:
-        oled.ScreenTimer10 = False
-        oled.ScreenTimer20 = False
-        oled.ScreenTimerStart = True
-        oled.ScreenTimerStamp = 0.0
-sleep(0.02)
+    sleep(0.02)
