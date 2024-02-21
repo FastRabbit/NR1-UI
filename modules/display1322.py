@@ -4,6 +4,8 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
+from nr1ui import font1
+
 
 def load_font(filename, font_size):
     font_path = os.path.dirname(os.path.realpath(__file__)) + '/../fonts/'
@@ -35,12 +37,12 @@ class StaticText(Screen):
         super(StaticText, self).__init__(height, width)
 
         self.textlabel = textlabel
-        self.textwidth, self.textheight = self.draw.textsize(textlabel, font=font)
+        self.textwidth, self.textheight = self.draw.textsize(textlabel, font=font1)
         self.center = center
         self.image = Image.new('RGB', (self.textwidth + 2, self.textheight + 2), bgcolor)  # Need to investigate what are the result of +2 is
         self.draw = ImageDraw.Draw(self.image)
         # self.draw.fontmode = "1"  #no antialiasing
-        self.draw.text((0, 0), textlabel, font=font, fill=fill)
+        self.draw.text((0, 0), textlabel, font=font1, fill=fill)
 
     def DrawOn(self, image, position):
         if self.center:
@@ -61,12 +63,12 @@ class ScrollText(Screen):
         self.endScrollMargin = 2  # could not see a difference when set to 4. Maybe a higher number?
 
         self.textlabel = textlabel
-        self.textwidth, self.textheight = self.draw.textsize(textlabel, font=font)
+        self.textwidth, self.textheight = self.draw.textsize(textlabel, font=font1)
         self.stopPosition = self.textwidth - width + self.endScrollMargin
 
         self.image = Image.new('RGB', (self.textwidth + 4, self.textheight + 4))  # Need to investigate what are the result of +4 is
         self.draw = ImageDraw.Draw(self.image)
-        self.draw.text((0, 0), textlabel, font=font, fill="white")
+        self.draw.text((0, 0), textlabel, font=font1, fill="white")
 
     def DrawOn(self, image, position):
         """ Draw the label on (x,y) position of an image with starting at <offset> """

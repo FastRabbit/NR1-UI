@@ -2,15 +2,15 @@
 
 # ___________________________________________________________________
 # config for boot- and shutdown-logo
-oledBootLogo = "StartScreen1322.bmp"
-oledShutdownLogo = "ShutdownScreen1322.bmp"
+# oledBootLogo = "StartScreen1322.bmp"
+# oledShutdownLogo = "ShutdownScreen1322.bmp"
 
 # ___________________________________________________________________
 # config for Clock/Standby:
 oledtext03 = 40, 5  # clock
-oledtext04 = 0, 52  # IP
-oledtext05 = 176, 52  # Date
-oledtext09 = 244, 51  # LibraryInfoIcon
+# oledtext04 = 0, 52  # IP
+# oledtext05 = 176, 52  # Date
+# oledtext09 = 244, 51  # LibraryInfoIcon
 
 # _______'Spectrum-Center'_____________________________________________________
 # Config TextPositions NowPlaying-/StandBy-Screen:
@@ -293,10 +293,10 @@ oledListTextPosY = 16  # height of each Entry (4x16 = 64)
 
 # ___________________________________________________________________
 # config for Text:
-oledArt = 'Artist :'  # sets the Artists-text for the MediaLibrarayInfo
-oledAlb = 'Albums:'  # sets the Albums-text for the MediaLibrarayInfo
-oledSon = 'Songs :'  # sets the Songs-text for the MediaLibrarayInfo
-oledPla = 'Playtime :'  # sets the Playtime-text for the MediaLibrarayInfo
+oledArt = 'Artist :'  # sets the Artists-text for the ScreenMediaLibraryInfo
+oledAlb = 'Albums:'  # sets the Albums-text for the ScreenMediaLibraryInfo
+oledSon = 'Songs :'  # sets the Songs-text for the ScreenMediaLibraryInfo
+oledPla = 'Playtime :'  # sets the Playtime-text for the ScreenMediaLibraryInfo
 
 # ___________________________________________________________________
 # config for Icons:

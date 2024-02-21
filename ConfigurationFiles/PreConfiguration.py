@@ -6,6 +6,7 @@ ENCODER_BUTTON_IO = 6
 
 # config for Display:
 NowPlayingLayout = "Spectrum-Center"
+
 oledrotation = 2
 
 # config for timers:
