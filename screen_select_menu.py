@@ -1,9 +1,11 @@
 from ConfigurationFiles.ScreenConfig1322 import *
 from ConfigurationFiles.PreConfiguration import SpectrumActive, NowPlayingLayout
 from modules.display1322 import *
+from modules.display1322 import StaticText
 
 
 from nr1ui import ScreenList
+
 
 class ScreenSelectMenu():
     def __init__(self, height, width):

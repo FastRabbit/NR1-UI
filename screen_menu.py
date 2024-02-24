@@ -1,6 +1,7 @@
 from ConfigurationFiles.ScreenConfig1322 import *
 from nr1ui import oled
 from nr1ui import font2
+from modules.display1322 import *
 
 
 class ScreenMenue():
