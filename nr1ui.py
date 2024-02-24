@@ -29,11 +29,6 @@ from modules.pushbutton import PushButton
 from modules.rotaryencoder import RotaryEncoder
 from modules.show_gif import show_gif
 
-# from screen_menu import ScreenMenue
-# from screen_library import ScreenMediaLibraryInfo
-# from screen_select_menu import ScreenSelectMenu, ScreenList
-# from screen_playing import ScreenNowPlaying
-
 GPIO.setwarnings(False)
 
 # Socket-IO-Configuration for Rest API

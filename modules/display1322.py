@@ -4,7 +4,7 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-# from nr1ui import font1
+from nr1ui import font
 
 
 def load_font(filename, font_size):

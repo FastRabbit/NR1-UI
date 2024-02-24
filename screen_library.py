@@ -1,10 +1,10 @@
 from ConfigurationFiles.ScreenConfig1322 import *
 from modules.display1322 import *
 
-# from nr1ui import oled
-# from nr1ui import font4
-# from nr1ui import iconfontBottom
-# from nr1ui import mediaicon
+from nr1ui import oled
+from nr1ui import font4
+from nr1ui import iconfontBottom
+from nr1ui import mediaicon
 
 
 class ScreenMediaLibraryInfo():
