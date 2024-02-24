@@ -2,34 +2,34 @@ from time import *
 from ConfigurationFiles.ScreenConfig1322 import *
 from modules.display1322 import *
 
-from nr1ui import oled
-from nr1ui import font1
-from nr1ui import font3
-from nr1ui import font4
-from nr1ui import font6
-from nr1ui import font7
-from nr1ui import font8
-from nr1ui import font11
-from nr1ui import font13
-from nr1ui import font14
-from nr1ui import fontClock
-from nr1ui import labelfont
-from nr1ui import labelfontfa
+# from nr1ui import oled
+# from nr1ui import font1
+# from nr1ui import font3
+# from nr1ui import font4
+# from nr1ui import font6
+# from nr1ui import font7
+# from nr1ui import font8
+# from nr1ui import font11
+# from nr1ui import font13
+# from nr1ui import font14
+# from nr1ui import fontClock
+# from nr1ui import labelfont
+# from nr1ui import labelfontfa
 
-from nr1ui import ScrollArtistTag
-from nr1ui import ScrollArtistNext
-from nr1ui import ScrollArtistFirstRound
-from nr1ui import ScrollArtistNextRound
-from nr1ui import ScrollSongTag
-from nr1ui import ScrollSongNext
-from nr1ui import ScrollSongFirstRound
-from nr1ui import ScrollSongNextRound
-from nr1ui import ScrollAlbumTag
-from nr1ui import ScrollAlbumNext
-from nr1ui import ScrollAlbumFirstRound
-from nr1ui import ScrollAlbumNextRound
-from nr1ui import NowPlayingLayout
-from nr1ui import newStatus
+# from nr1ui import ScrollArtistTag
+# from nr1ui import ScrollArtistNext
+# from nr1ui import ScrollArtistFirstRound
+# from nr1ui import ScrollArtistNextRound
+# from nr1ui import ScrollSongTag
+# from nr1ui import ScrollSongNext
+# from nr1ui import ScrollSongFirstRound
+# from nr1ui import ScrollSongNextRound
+# from nr1ui import ScrollAlbumTag
+# from nr1ui import ScrollAlbumNext
+# from nr1ui import ScrollAlbumFirstRound
+# from nr1ui import ScrollAlbumNextRound
+# from nr1ui import NowPlayingLayout
+# from nr1ui import newStatus
 
 
 class ScreenNowPlaying():

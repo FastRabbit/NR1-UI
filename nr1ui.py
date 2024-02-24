@@ -156,7 +156,7 @@ image = Image.new('RGB', (oled.WIDTH, oled.HEIGHT))  # for Pixelshift: (oled.WID
 
 oled.clear()
 
-font1 = load_font('NotoSansTC-Bold.otf', 18)  # used for Artist
+font = load_font('NotoSansTC-Bold.otf', 18)  # used for Artist
 font2 = load_font('NotoSansTC-Light.otf', 12)  # used for all menus
 font14 = load_font('NotoSansTC-Light.otf', 12)  # used for Artist
 font3 = load_font('NotoSansTC-Regular.otf', 16)  # used for Song
