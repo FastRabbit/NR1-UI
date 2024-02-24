@@ -29,10 +29,10 @@ from modules.pushbutton import PushButton
 from modules.rotaryencoder import RotaryEncoder
 from modules.show_gif import show_gif
 
-from screen_menu import ScreenMenue
-from screen_library import ScreenMediaLibraryInfo
-from screen_select_menu import ScreenSelectMenu, ScreenList
-from screen_playing import ScreenNowPlaying
+# from screen_menu import ScreenMenue
+# from screen_library import ScreenMediaLibraryInfo
+# from screen_select_menu import ScreenSelectMenu, ScreenList
+# from screen_playing import ScreenNowPlaying
 
 GPIO.setwarnings(False)
 
@@ -171,6 +171,14 @@ labelfont = load_font('entypo.ttf', 12)  # used for Menu-icons
 iconfontBottom = load_font('entypo.ttf', 10)  # used for icons under the screen / button layout
 labelfontfa = load_font('fa-solid-900.ttf', 12)  # used for icons under the screen / button layout
 fontClock = load_font('DSG.ttf', 45)  # used for clock
+
+
+
+from screen_menu import ScreenMenue
+from screen_library import ScreenMediaLibraryInfo
+from screen_select_menu import ScreenSelectMenu, ScreenList
+from screen_playing import ScreenNowPlaying
+
 
 
 def display_update_service():
