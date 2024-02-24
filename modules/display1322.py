@@ -7,16 +7,6 @@ from PIL import ImageFont
 from nr1ui import font
 
 
-def load_font(filename, font_size):
-    font_path = os.path.dirname(os.path.realpath(__file__)) + '/../fonts/'
-    try:
-        font = ImageFont.truetype(font_path + filename, font_size)
-    except IOError:
-        print('font file not found -> using default font')
-        font = ImageFont.load_default()
-    return font
-
-
 class Screen(object):  # screen base class
     def __init__(self, width, height):
 

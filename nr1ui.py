@@ -158,6 +158,17 @@ image = Image.new('RGB', (oled.WIDTH, oled.HEIGHT))  # for Pixelshift: (oled.WID
 
 oled.clear()
 
+
+def load_font(filename, font_size):
+    font_path = os.path.dirname(os.path.realpath(__file__)) + '/../fonts/'
+    try:
+        font = ImageFont.truetype(font_path + filename, font_size)
+    except IOError:
+        print('font file not found -> using default font')
+        font = ImageFont.load_default()
+    return font
+
+
 font = load_font('NotoSansTC-Bold.otf', 18)  # used for Artist
 font2 = load_font('NotoSansTC-Light.otf', 12)  # used for all menus
 font14 = load_font('NotoSansTC-Light.otf', 12)  # used for Artist
