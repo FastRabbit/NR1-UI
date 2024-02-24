@@ -3,11 +3,7 @@ from ConfigurationFiles.PreConfiguration import SpectrumActive, NowPlayingLayout
 from modules.display1322 import *
 
 
-if SpectrumActive:
-    ScreenList = ['Spectrum-Center', 'No-Spectrum', 'Modern', 'VU-Meter-2', 'VU-Meter-Bar']
-else:
-    ScreenList = ['No-Spectrum']
-
+from nr1ui import ScreenList
 
 class ScreenSelectMenu():
     def __init__(self, height, width):

@@ -36,6 +36,13 @@ volumio_host = 'localhost'
 volumio_port = 3000
 volumio_socket_io = SocketIO(volumio_host, volumio_port)
 
+
+if SpectrumActive:
+    ScreenList = ['Spectrum-Center', 'No-Spectrum', 'Modern', 'VU-Meter-2', 'VU-Meter-Bar']
+else:
+    ScreenList = ['No-Spectrum']
+
+
 # Logic to prevent freeze if FIFO-Out for Cava is missing:
 ReNewMPDconf = {'endpoint': 'music_service/mpd', 'method': 'createMPDFile', 'data': ''}
 if SpectrumActive is True:
