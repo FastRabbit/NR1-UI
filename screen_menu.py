@@ -7,7 +7,7 @@ from modules.display1322 import *
 # from nr1ui import font2
 
 
-from oled import *
+from display import *
 from font import *
 
 
@@ -15,11 +15,11 @@ class ScreenMenue():
     def __init__(self, height, width):
         self.height = height
         self.width = width
-        self.selectedOption = oled.playPosition
+        self.selectedOption = display.playPosition
         self.menurows = oledListEntrys
         self.menuText = [None for i in range(self.menurows)]
-        self.menuList = oled.queue
-        self.totaloptions = len(oled.queue)
+        self.menuList = display.queue
+        self.totaloptions = len(display.queue)
         self.onscreenoptions = min(self.menurows, self.totaloptions)
         self.firstrowindex = 0
         self.MenuUpdate()

@@ -11,20 +11,16 @@ from socketIO_client import SocketIO
 from datetime import datetime as datetime
 from io import BytesIO
 from PIL import Image
-from PIL import ImageDraw
-import numpy as np
 
-from oled import *
-from font import *
+from display import *
 
 from ConfigurationFiles.ScreenConfig1322 import *
 from ConfigurationFiles.PreConfiguration import NowPlayingLayout, SpectrumActive
 from ConfigurationFiles.PreConfiguration import ENCODER_LEFT_IO, ENCODER_RIGHT_IO, ENCODER_BUTTON_IO
-from ConfigurationFiles.PreConfiguration import oledrotation, oledPause2StopTime
+from ConfigurationFiles.PreConfiguration import oledPause2StopTime
 
 
-from modules.buttonsleds import update_leds_with_volumio_state
-from modules.buttonsleds import check_buttons_and_update_leds
+from modules.buttonsleds import update_leds_with_volumio_state, check_buttons_and_update_leds
 from modules.display1322 import *
 from modules.pushbutton import PushButton
 from modules.rotaryencoder import RotaryEncoder
@@ -36,12 +32,6 @@ GPIO.setwarnings(False)
 volumio_host = 'localhost'
 volumio_port = 3000
 volumioIO = SocketIO(volumio_host, volumio_port)
-
-
-# if SpectrumActive:
-#     ScreenList = ['Spectrum-Center', 'No-Spectrum', 'Modern', 'VU-Meter-2', 'VU-Meter-Bar']
-# else:
-#     ScreenList = ['No-Spectrum']
 
 
 # Logic to prevent freeze if FIFO-Out for Cava is missing:
@@ -82,6 +72,7 @@ if NowPlayingLayoutSave != NowPlayingLayout:
     else:
         NowPlayingLayout = NowPlayingLayoutSave
 
+display.SelectedScreen = NowPlayingLayout
 
 STATE_NONE = -1
 STATE_PLAYER = 0
@@ -91,58 +82,9 @@ STATE_SCREEN_MENU = 3
 
 UPDATE_INTERVAL = 0.034
 
-# emit_track = False
-# newStatus = 0  # makes newStatus usable outside of onPushState
-# varcanc = True  # helper for pause -> stop timeout counter
-# secvar = 0.0
-# ScrollArtistTag = 0
-# ScrollArtistNext = 0
-# ScrollArtistFirstRound = True
-# ScrollArtistNextRound = False
-# ScrollSongTag = 0
-# ScrollSongNext = 0
-# ScrollSongFirstRound = True
-# ScrollSongNextRound = False
-# ScrollAlbumTag = 0
-# ScrollAlbumNext = 0
-# ScrollAlbumFirstRound = True
-# ScrollAlbumNextRound = False
-# ScrollSpecsTag = 0
-# ScrollSpecsNext = 0
-# ScrollSpecsFirstRound = True
-# ScrollSpecsNextRound = False
+image = Image.new('RGB', (display.WIDTH, display.HEIGHT))  # for Pixelshift: (display.WIDTH + 4, display.HEIGHT + 4))
 
-image = Image.new('RGB', (oled.WIDTH, oled.HEIGHT))  # for Pixelshift: (oled.WIDTH + 4, oled.HEIGHT + 4))
-
-oled.clear()
-
-
-def load_font(filename, font_size):
-    font_path = os.path.dirname(os.path.realpath(__file__)) + '/fonts/'
-    try:
-        font = ImageFont.truetype(font_path + filename, font_size)
-    except IOError:
-        print('font file not found -> using default font')
-        font = ImageFont.load_default()
-    return font
-
-
-font = load_font('NotoSansTC-Bold.otf', 18)  # used for Artist
-font2 = load_font('NotoSansTC-Light.otf', 12)  # used for all menus
-font14 = load_font('NotoSansTC-Light.otf', 12)  # used for Artist
-font3 = load_font('NotoSansTC-Regular.otf', 16)  # used for Song
-font4 = load_font('Oxanium-Medium.ttf', 12)  # used for Format/Smplerate/Bitdepth
-font6 = load_font('NotoSansTC-Regular.otf', 12)  # used for Song / Screen5
-font7 = load_font('Oxanium-Light.ttf', 10)  # used for all other / Screen5
-font8 = load_font('NotoSansTC-Regular.otf', 10)  # used for Song / Screen5
-font11 = load_font('Oxanium-Regular.ttf', 10)  # used for specs in VUmeter2
-font13 = load_font('NotoSansTC-Regular.otf', 14)  # used for Artist
-mediaicon = load_font('fa-solid-900.ttf', 10)  # used for icon in Media-library info
-labelfont = load_font('entypo.ttf', 12)  # used for Menu-icons
-iconfontBottom = load_font('entypo.ttf', 10)  # used for icons under the screen / button layout
-labelfontfa = load_font('fa-solid-900.ttf', 12)  # used for icons under the screen / button layout
-fontClock = load_font('DSG.ttf', 45)  # used for clock
-
+display.clear()
 
 
 from screen_menu import ScreenMenue
@@ -153,41 +95,41 @@ from screen_playing import ScreenNowPlaying
 
 
 def display_update_service():
-    while UPDATE_INTERVAL > 0 and oled.ShutdownFlag is False:
+    while UPDATE_INTERVAL > 0 and display.ShutdownFlag is False:
         # Felix: check me
         prevTime = time()
         dt = time() - prevTime
-        if oled.stateTimeout > 0:
-            oled.timeOutRunning = True
-            oled.stateTimeout -= dt
-        elif oled.stateTimeout <= 0 and oled.timeOutRunning:
-            oled.timeOutRunning = False
-            oled.stateTimeout = 0
+        if display.stateTimeout > 0:
+            display.timeOutRunning = True
+            display.stateTimeout -= dt
+        elif display.stateTimeout <= 0 and display.timeOutRunning:
+            display.timeOutRunning = False
+            display.stateTimeout = 0
             SetState(STATE_PLAYER)
         image.paste("black", [0, 0, image.size[0], image.size[1]])
         try:
-            oled.modal.DrawOn(image)
+            display.modal.DrawOn(image)
         except AttributeError:
-            print("render error")
+            print(f"render error in state {display.state}")
             sleep(1)
-        oled.display(image.crop((0, 0, oled.WIDTH, oled.HEIGHT)))
+        display.display(image.crop((0, 0, display.WIDTH, display.HEIGHT)))
         sleep(UPDATE_INTERVAL)
 
 
 def SetState(state):
-    oled.state = state
-    if oled.state == STATE_PLAYER:
-        oled.modal = ScreenNowPlaying(oled.HEIGHT, oled.WIDTH)
-    elif oled.state == STATE_QUEUE_MENU:
-        oled.modal = ScreenMenue(oled.HEIGHT, oled.WIDTH)
-    elif oled.state == STATE_LIBRARY_INFO:
-        oled.modal = ScreenMediaLibraryInfo(oled.HEIGHT, oled.WIDTH)
-    elif oled.state == STATE_SCREEN_MENU:
-        oled.modal = ScreenSelectMenu(oled.HEIGHT, oled.WIDTH)
+    display.state = state
+    if display.state == STATE_PLAYER:
+        display.modal = ScreenNowPlaying(display.HEIGHT, display.WIDTH)
+    elif display.state == STATE_QUEUE_MENU:
+        display.modal = ScreenMenue(display.HEIGHT, display.WIDTH)
+    elif display.state == STATE_LIBRARY_INFO:
+        display.modal = ScreenMediaLibraryInfo(display.HEIGHT, display.WIDTH)
+    elif display.state == STATE_SCREEN_MENU:
+        display.modal = ScreenSelectMenu(display.HEIGHT, display.WIDTH)
 
 
 def onPushState(data):
-    if oled.state != STATE_SCREEN_MENU:
+    if display.state != STATE_SCREEN_MENU:
         global OPDsave
         global newStatus  # global definition for newStatus, used at the end-loop to update standby
         global newSong
@@ -234,81 +176,81 @@ def onPushState(data):
 
         if 'trackType' in data:
             newFormat = data['trackType']
-            oled.activeFormat = newFormat
+            display.activeFormat = newFormat
         else:
             newFormat = ''
         if newFormat is None:
             newFormat = ''
         if newFormat is True and newSong != 'HiFiBerry ADC':
             newFormat = 'WebRadio'
-            oled.activeFormat = newFormat
+            display.activeFormat = newFormat
         if newFormat is True and newSong == 'HiFiBerry ADC':
             newFormat = 'Live-Stream'
-            oled.activeFormat = newFormat
+            display.activeFormat = newFormat
 
         if 'samplerate' in data:
             newSamplerate = data['samplerate']
-            oled.activeSamplerate = newSamplerate
+            display.activeSamplerate = newSamplerate
         else:
             newSamplerate = ' '
-            oled.activeSamplerate = newSamplerate
+            display.activeSamplerate = newSamplerate
         if newSamplerate is None:
             newSamplerate = ' '
-            oled.activeSamplerate = newSamplerate
+            display.activeSamplerate = newSamplerate
 
         if 'bitrate' in data:
-            oled.bitrate = data['bitrate']
+            display.bitrate = data['bitrate']
         else:
             bitrate = ''
-        if oled.bitrate is None:
-            oled.bitrate = ''
+        if display.bitrate is None:
+            display.bitrate = ''
 
         if 'bitdepth' in data:
             newBitdepth = data['bitdepth']
-            oled.activeBitdepth = newBitdepth
+            display.activeBitdepth = newBitdepth
         else:
             newBitdepth = ' '
-            oled.activeBitdepth = newBitdepth
+            display.activeBitdepth = newBitdepth
         if newBitdepth is None:
             newBitdepth = ' '
-            oled.activeBitdepth = newBitdepth
+            display.activeBitdepth = newBitdepth
 
         if 'position' in data:                      # current position in queue
-            oled.playPosition = data['position']    # didn't work well with volumio ver. < 2.5
+            display.playPosition = data['position']    # didn't work well with volumio ver. < 2.5
         else:
-            oled.playPosition = None
+            display.playPosition = None
 
         if 'status' in data:
             newStatus = data['status']
 
 #        if 'volume' in data:            #get volume on startup and remote control
-#            oled.volume = int(data['volume'])
+#            display.volume = int(data['volume'])
 #        else:
-#            oled.volume = 100
+#            display.volume = 100
 
         if 'repeat' in data:
-            oled.repeat = data['repeat']
+            display.repeat = data['repeat']
 
         if 'repeatSingle' in data:
-            oled.repeatonce = data['repeatSingle']
+            display.repeatonce = data['repeatSingle']
 
         if 'random' in data:
-            oled.shuffle = data['random']
+            display.shuffle = data['random']
 
         if 'mute' in data:
-            oled.mute = data['mute']
+            display.mute = data['mute']
 
         if 'duration' in data:
-            oled.duration = data['duration']
+            display.duration = data['duration']
         else:
-            oled.duration = None
-        if oled.duration == int(0):
-            oled.duration = None
+            display.duration = None
+        if display.duration == int(0):
+            display.duration = None
 
         if 'seek' in data:
-            oled.seek = data['seek']
+            display.seek = data['seek']
         else:
-            oled.seek = None
+            display.seek = None
 
         if 'album' in data:
             newAlbum = data['album']
@@ -319,10 +261,10 @@ def onPushState(data):
             if newAlbum == '':
                 newAlbum = 'No Album'
 
-        if (newSong != oled.activeSong) or (newArtist != oled.activeArtist) or (newAlbum != oled.activeAlbum):                                # new song and artist
-            oled.activeSong = newSong
-            oled.activeArtist = newArtist
-            oled.activeAlbum = newAlbum
+        if (newSong != display.activeSong) or (newArtist != display.activeArtist) or (newAlbum != display.activeAlbum):                                # new song and artist
+            display.activeSong = newSong
+            display.activeArtist = newArtist
+            display.activeAlbum = newAlbum
             varcanc = True  # helper for pause -> stop timeout counter
             secvar = 0.0
             ScrollArtistTag = 0
@@ -342,17 +284,17 @@ def onPushState(data):
             ScrollSpecsFirstRound = True
             ScrollSpecsNextRound = False
 
-        if newStatus != oled.playState:
+        if newStatus != display.playState:
             varcanc = True  # helper for pause -> stop timeout counter
             secvar = 0.0
-            oled.playState = newStatus
-            if oled.state == STATE_PLAYER:
-                if oled.playState != 'stop':
+            display.playState = newStatus
+            if display.state == STATE_PLAYER:
+                if display.playState != 'stop':
                     if newStatus == 'pause':
-                        oled.playstateIcon = oledpauseIcon
+                        display.playstateIcon = oledpauseIcon
                     if newStatus == 'play':
-                        oled.playstateIcon = oledplayIcon
-                    oled.modal.UpdatePlayingInfo()
+                        display.playstateIcon = oledplayIcon
+                    display.modal.UpdatePlayingInfo()
                 else:
                     ScrollArtistTag = 0
                     ScrollArtistNext = 0
@@ -363,7 +305,7 @@ def onPushState(data):
                     ScrollSongFirstRound = True
                     ScrollSongNextRound = False
                     SetState(STATE_PLAYER)
-                    oled.modal.UpdateStandbyInfo()
+                    display.modal.UpdateStandbyInfo()
 
 
 def onPushCollectionStats(data):
@@ -397,90 +339,58 @@ def onPushCollectionStats(data):
     if newPlaytime is None:
         newPlaytime = ''
 
-    oled.activeArtists = str(newArtists)
-    oled.activeAlbums = str(newAlbums)
-    oled.activeSongs = str(newSongs)
-    oled.activePlaytime = str(newPlaytime)
+    display.activeArtists = str(newArtists)
+    display.activeAlbums = str(newAlbums)
+    display.activeSongs = str(newSongs)
+    display.activePlaytime = str(newPlaytime)
 
-    if oled.state == STATE_LIBRARY_INFO and oled.playState == 'info':  # this is the "Media-Library-Info-Screen"
-        oled.modal.UpdateLibraryInfo()
+    if display.state == STATE_LIBRARY_INFO and display.playState == 'info':  # this is the "Media-Library-Info-Screen"
+        display.modal.UpdateLibraryInfo()
 
 
 def onPushQueue(data):
-    oled.queue = [track['name'] if 'name' in track else 'no track' for track in data]
-
-
-def ButtonC_PushEvent():
-    print('ButtonC short press event')
-    if oled.state == STATE_PLAYER and oled.playState == 'stop':
-        print('RightKnob_PushEvent SHORT')
-        SetState(STATE_SCREEN_MENU)
-        sleep(0.2)
-    pass
-
-
-def ButtonD_PushEvent():
-    print('ButtonD short press event')
-    if oled.state == STATE_PLAYER and oled.playState == 'stop':
-        b_obj = BytesIO()
-        crl = Curl()
-        crl.setopt(crl.URL, 'localhost:3000/api/v1/collectionstats')
-        crl.setopt(crl.WRITEDATA, b_obj)
-        crl.perform()
-        crl.close()
-        get_body = b_obj.getvalue()
-        print('getBody', get_body)
-        SetState(STATE_LIBRARY_INFO)
-        oled.playState = 'info'
-        onPushCollectionStats(get_body)
-        sleep(0.5)
-    elif oled.state == STATE_LIBRARY_INFO:
-        SetState(STATE_PLAYER)
-
-
-button_action_map = {
-    'ButtonD': ButtonD_PushEvent,
-    'ButtonC': ButtonC_PushEvent,
-}
+    display.queue = [track['name'] if 'name' in track else 'no track' for track in data]
 
 
 def RightKnob_RotaryEvent(dir):
     global emit_track
-    oled.stateTimeout = 6.0
-    print(f"RightKnob_RotaryEvent State: {oled.state}")
-    if oled.state == STATE_PLAYER:
+    display.stateTimeout = 6.0
+    print(f"RightKnob_RotaryEvent State: {display.state}")
+    if display.state == STATE_PLAYER:
         SetState(STATE_QUEUE_MENU)
-    elif oled.state == STATE_QUEUE_MENU and dir == RotaryEncoder.LEFT:
-        oled.modal.PrevOption()
-        oled.selQueue = oled.modal.SelectedOption()
+    elif display.state == STATE_QUEUE_MENU and dir == RotaryEncoder.LEFT:
+        display.modal.PrevOption()
+        display.selQueue = display.modal.SelectedOption()
         emit_track = True
-    elif oled.state == STATE_QUEUE_MENU and dir == RotaryEncoder.RIGHT:
-        oled.modal.NextOption()
-        oled.selQueue = oled.modal.SelectedOption()
+    elif display.state == STATE_QUEUE_MENU and dir == RotaryEncoder.RIGHT:
+        display.modal.NextOption()
+        display.selQueue = display.modal.SelectedOption()
         emit_track = True
-    elif oled.state == STATE_SCREEN_MENU and dir == RotaryEncoder.LEFT:
+    elif display.state == STATE_SCREEN_MENU and dir == RotaryEncoder.LEFT:
         print('leftdir Rotary')
-        oled.modal.PrevOption()
-        oled.SelectedScreen = oled.modal.SelectedOption()
-    elif oled.state == STATE_SCREEN_MENU and dir == RotaryEncoder.RIGHT:
-        oled.modal.NextOption()
-        oled.SelectedScreen = oled.modal.SelectedOption()
+        display.modal.PrevOption()
+        display.SelectedScreen = display.modal.SelectedOption()
+    elif display.state == STATE_SCREEN_MENU and dir == RotaryEncoder.RIGHT:
+        display.modal.NextOption()
+        display.SelectedScreen = display.modal.SelectedOption()
 
 
 def RightKnob_PushEvent(hold_time):
     if hold_time < 1:
-        if oled.state == STATE_QUEUE_MENU:
+        if display.state == STATE_QUEUE_MENU:
             print('RightKnob_PushEvent SHORT')
-            oled.stateTimeout = 0
-        if oled.state == STATE_SCREEN_MENU:
+            display.stateTimeout = 0
+        if display.state == STATE_SCREEN_MENU:
             print('RightKnob_PushEvent Long')
             global NowPlayingLayout
-            oled.SelectedScreen = oled.modal.SelectedOption()
-            Screen = ScreenList[oled.SelectedScreen]
+            display.SelectedScreen = display.modal.SelectedOption()
+            Screen = ScreenList[display.SelectedScreen]
+            print(f"changed screen to {Screen}")
             WriteSelScreen = open('/home/volumio/NR1-UI/ConfigurationFiles/LayoutSet.txt', 'w')
             WriteSelScreen.write(Screen)
             WriteSelScreen.close
             NowPlayingLayout = Screen
+            display.SelectedScreen = Screen
             SetState(STATE_PLAYER)
             volumioIO.emit('stop')
 
@@ -492,13 +402,13 @@ RightKnob_Rotation.setCallback(RightKnob_RotaryEvent)
 
 
 boot_logo_path = "/home/volumio/NR1-UI/img/bootlogo.gif"
-show_gif(oled, boot_logo_path, display_time=2, frame_duration=0.02)
+show_gif(display, boot_logo_path, display_time=2, frame_duration=0.02)
 
 loading_logo_path = "/home/volumio/NR1-UI/img/loading.gif"
-show_gif(oled, loading_logo_path, display_time=2, frame_duration=0.02)
+show_gif(display, loading_logo_path, display_time=2, frame_duration=0.02)
 
 
-sleep(5)
+# sleep(5)
 SetState(STATE_PLAYER)
 
 updateThread = Thread(target=display_update_service)
@@ -524,128 +434,198 @@ volumioIO.emit('getQueue')
 
 sleep(0.1)
 
-try:
-    # load last playing track number
-    with open('oledConfigurationFiles.json', 'r') as f:
-        config = json.load(f)
-except IOError:
-    pass
-else:
-    oled.playPosition = config['track']
-
-# helper for missing Artist/Song when changing sources
-# Felx: check for delet
-InfoTag = 0
-
 
 def PlaypositionHelper():
     while True:
         volumioIO.emit('getState')
-        oled.date = datetime.now().strftime("%d.%m.%Y")
+        display.date = datetime.now().strftime("%d.%m.%Y")
         sleep(1.0)
 
 
 PlayPosHelp = Thread(target=PlaypositionHelper, daemon=True)
 PlayPosHelp.start()
 
+
+def activate_play():
+    print("Activating play.")
+    try:
+        volumioIO.emit('play')
+    except Exception as e:
+        print("Error: ", e)
+    else:
+        print("Playback started.")
+
+
+def activate_pause():
+    print("Activating pause.")
+    try:
+        volumioIO.emit('pause')
+    except Exception as e:
+        print("Error: ", e)
+    else:
+        print("Playback paused.")
+
+
+def activate_back():
+    print("Activating previous track.")
+    try:
+        volumioIO.emit('previous')
+    except Exception as e:
+        print("Error: ", e)
+    else:
+        print("Track skipped back.")
+
+
+def activate_forward():
+    print("Activating next track.")
+    try:
+        volumioIO.emit('next')
+    except Exception as e:
+        print("Error: ", e)
+    else:
+        print("Track skipped forward.")
+
+
+def activate_shuffle():
+    try:
+        volumio_state = get_volumio_state()
+        if volumio_state and "random" in volumio_state:
+            current_random = volumio_state["random"]
+            new_random_mode = not current_random
+            volumioIO.emit('setRandom', {'value': new_random_mode})
+    except Exception as e:
+        print("Error: ", e)
+    else:
+        print("Random mode toggled.")
+
+
+def activate_repeat():
+    try:
+        volumio_state = get_volumio_state()
+        if volumio_state and "repeat" in volumio_state:
+            current_repeat = volumio_state["repeat"]
+            new_repeat_mode = not current_repeat
+            volumioIO.emit('setRepeat', {'value': new_repeat_mode})
+    except Exception as e:
+        print('Error:', e)
+    else:
+        print('Repeat mode toggled.')
+
+
+def activate_favourites():
+    try:
+        volumioIO.emit('playPlaylist', {'name': 'favourites'})
+    except Exception as e:
+        print("Error: ", e)
+    else:
+        print("Favourites playlist loaded.")
+
+
+def ButtonC_PushEvent():
+    print('ButtonC short press event')
+    if display.state == STATE_PLAYER and display.playState == 'stop':
+        print('RightKnob_PushEvent SHORT')
+        SetState(STATE_SCREEN_MENU)
+        sleep(0.2)
+    pass
+
+
+def ButtonD_PushEvent():
+    print('ButtonD short press event')
+    if display.state == STATE_PLAYER and display.playState == 'stop':
+        b_obj = BytesIO()
+        crl = Curl()
+        crl.setopt(crl.URL, 'localhost:3000/api/v1/collectionstats')
+        crl.setopt(crl.WRITEDATA, b_obj)
+        crl.perform()
+        crl.close()
+        get_body = b_obj.getvalue()
+        print('getBody', get_body)
+        SetState(STATE_LIBRARY_INFO)
+        display.playState = 'info'
+        onPushCollectionStats(get_body)
+        sleep(0.5)
+    elif display.state == STATE_LIBRARY_INFO:
+        SetState(STATE_PLAYER)
+
+
+button_action_map = {
+    0: activate_play,
+    1: activate_pause,
+    2: activate_back,
+    3: activate_forward,
+    4: activate_shuffle,
+    5: activate_repeat,
+    6: activate_favourites,
+    7: ButtonC_PushEvent,
+}
+
+
+def get_volumio_state():
+    try:
+        response = requests.get("http://localhost:3000/api/v1/getState")
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print("Error: ", e)
+        return None
+    else:
+        return json.loads(response.text)
+
+
 while True:
 
-    update_leds_with_volumio_state()
-    check_buttons_and_update_leds(ButtonC_PushEvent)
+    volumio_state = get_volumio_state()
+    update_leds_with_volumio_state(volumio_state)
+    check_buttons_and_update_leds(button_action_map)
 
-    if emit_track and oled.stateTimeout < 4.5:
+    if emit_track and display.stateTimeout < 4.5:
         emit_track = False
         try:
             SetState(STATE_PLAYER)
-            InfoTag = 0
         except IndexError:
             pass
         volumioIO.emit('stop')
         sleep(0.01)
-        volumioIO.emit('play', {'value': oled.selQueue})
+        volumioIO.emit('play', {'value': display.selQueue})
     sleep(0.1)
 
-    # this is the loop to push the actual time every 0.1sec to the "Standby-Screen"
-    if oled.state == STATE_PLAYER and newStatus == 'stop' and oled.ShutdownFlag is False:
-        InfoTag = 0  # resets the InfoTag helper from artist/song update loop
-        oled.state = 0
-        oled.time = strftime("%H:%M")
-        SetState(STATE_PLAYER)
-        oled.modal.UpdateStandbyInfo()
-        sleep(0.2)
+    if display.state == STATE_PLAYER:
 
-    # if playback is paused, here is defined when the Player goes back to "Standby"/Stop     
-    if oled.state == STATE_PLAYER and newStatus == 'pause' and varcanc is True:
-        secvar = int(round(time()))
-        varcanc = False
-    elif oled.state == STATE_PLAYER and newStatus == 'pause' and int(round(time())) - secvar > oledPause2StopTime:
-        varcanc = True
-        volumioIO.emit('stop')
-        oled.modal.UpdateStandbyInfo()
-        secvar = 0.0
+        if newStatus == 'stop' and display.ShutdownFlag is False:
+            display.time = datetime.now().strftime("%H:%M")
+            SetState(STATE_PLAYER)
+            display.modal.UpdateStandbyInfo()
+            sleep(0.2)
 
-    if oled.state == STATE_PLAYER and newStatus == 'play' and oled.ScreenTimerStart is True:
-        oled.ScreenTimerStamp = int(round(time()))
-        oled.ScreenTimerStart = False
-        oled.ScreenTimer10 = True
+        if newStatus == 'pause' and varcanc is True:
+            secvar = int(round(time()))
+            varcanc = False
+        elif newStatus == 'pause' and int(round(time())) - secvar > oledPause2StopTime:
+            varcanc = True
+            volumioIO.emit('stop')
+            display.modal.UpdateStandbyInfo()
+            secvar = 0.0
 
-    if oled.state == STATE_PLAYER and newStatus != 'stop': 
-        if oled.ScreenTimer10 is True and (int(round(time())) - oled.ScreenTimerStamp > oled.ScreenTimerChangeTime):
-            oled.ScreenTimerChangeTime
-            oled.ScreenTimer10 = False
-            oled.ScreenTimer20 = True
-        if oled.ScreenTimer20 is True and ((int(round(time())) - oled.ScreenTimerStamp) > (oled.ScreenTimerChangeTime * 2)):
-            oled.ScreenTimer20 = False
-            oled.ScreenTimerStart = True
-            oled.ScreenTimerStamp = 0.0
-            oled.ScreenTimer10 = True
+        if newStatus == 'play' and display.ScreenTimerStart is True:
+            display.ScreenTimerStamp = int(round(time()))
+            display.ScreenTimerStart = False
+            display.ScreenTimer10 = True
 
-    if oled.state != STATE_PLAYER:
-        oled.ScreenTimer10 = False
-        oled.ScreenTimer20 = False
-        oled.ScreenTimerStart = True
-        oled.ScreenTimerStamp = 0.0
+        if newStatus != 'stop':
+            if display.ScreenTimer10 is True and (int(round(time())) - display.ScreenTimerStamp > display.ScreenTimerChangeTime):
+                display.ScreenTimerChangeTime
+                display.ScreenTimer10 = False
+                display.ScreenTimer20 = True
+            if display.ScreenTimer20 is True and ((int(round(time())) - display.ScreenTimerStamp) > (display.ScreenTimerChangeTime * 2)):
+                display.ScreenTimer20 = False
+                display.ScreenTimerStart = True
+                display.ScreenTimerStamp = 0.0
+                display.ScreenTimer10 = True
 
-    # if oled.state == STATE_PLAYER:
-
-    #     # this is the loop to push the actual time every 0.1sec to the "Standby-Screen"
-    #     if newStatus == 'stop' and oled.ShutdownFlag is False:
-    #         InfoTag = 0  # resets the InfoTag helper from artist/song update loop
-    #         oled.time = datetime.now().strftime("%H:%M")
-    #         SetState(STATE_PLAYER)
-    #         oled.modal.UpdateStandbyInfo()
-    #         sleep(0.2)
-
-    #     # if playback is paused, here is defined when the Player goes back to "Standby"/Stop
-    #     if newStatus == 'pause' and varcanc is True:
-    #         secvar = int(round(time()))
-    #         varcanc = False
-    #     elif newStatus == 'pause' and int(round(time())) - secvar > oledPause2StopTime:
-    #         varcanc = True
-    #         volumioIO.emit('stop')
-    #         oled.modal.UpdateStandbyInfo()
-    #         secvar = 0.0
-
-    #     if newStatus == 'play' and oled.ScreenTimerStart is True:
-    #         oled.ScreenTimerStamp = int(round(time()))
-    #         oled.ScreenTimerStart = False
-    #         oled.ScreenTimer10 = True
-
-    #     if newStatus != 'stop':
-    #         if oled.ScreenTimer10 is True and (int(round(time())) - oled.ScreenTimerStamp > oled.ScreenTimerChangeTime):
-    #             oled.ScreenTimerChangeTime
-    #             oled.ScreenTimer10 = False
-    #             oled.ScreenTimer20 = True
-    #         if oled.ScreenTimer20 is True and ((int(round(time())) - oled.ScreenTimerStamp) > (oled.ScreenTimerChangeTime * 2)):
-    #             oled.ScreenTimer20 = False
-    #             oled.ScreenTimerStart = True
-    #             oled.ScreenTimerStamp = 0.0
-    #             oled.ScreenTimer10 = True
-
-    # if oled.state != STATE_PLAYER:
-    #     oled.ScreenTimer10 = False
-    #     oled.ScreenTimer20 = False
-    #     oled.ScreenTimerStart = True
-    #     oled.ScreenTimerStamp = 0.0
+    if display.state != STATE_PLAYER:
+        display.ScreenTimer10 = False
+        display.ScreenTimer20 = False
+        display.ScreenTimerStart = True
+        display.ScreenTimerStamp = 0.0
 
     sleep(0.02)

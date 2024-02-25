@@ -6,7 +6,7 @@ from modules.display1322 import *
 # from nr1ui import iconfontBottom
 # from nr1ui import mediaicon
 
-from oled import *
+from display import *
 from font import *
 
 
@@ -21,10 +21,10 @@ class ScreenMediaLibraryInfo():
 
     def DrawOn(self, image):
         self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
-        self.draw.text((oledtext10), oled.activeArtists, font=font4, fill='white')
-        self.draw.text((oledtext11), oled.activeAlbums, font=font4, fill='white')
-        self.draw.text((oledtext12), oled.activeSongs, font=font4, fill='white')
-        self.draw.text((oledtext13), oled.activePlaytime, font=font4, fill='white')
+        self.draw.text((oledtext10), display.activeArtists, font=font4, fill='white')
+        self.draw.text((oledtext11), display.activeAlbums, font=font4, fill='white')
+        self.draw.text((oledtext12), display.activeSongs, font=font4, fill='white')
+        self.draw.text((oledtext13), display.activePlaytime, font=font4, fill='white')
         self.draw.text((oledtext14), oledArt, font=font4, fill='white')
         self.draw.text((oledtext15), oledAlb, font=font4, fill='white')
         self.draw.text((oledtext16), oledSon, font=font4, fill='white')

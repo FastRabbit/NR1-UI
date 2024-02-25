@@ -3,9 +3,8 @@ from ConfigurationFiles.PreConfiguration import SpectrumActive, NowPlayingLayout
 from modules.display1322 import *
 
 
-# from nr1ui import ScreenList
 
-from oled import *
+from display import *
 from font import *
 
 

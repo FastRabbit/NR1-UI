@@ -5,7 +5,7 @@ from ConfigurationFiles.ScreenConfig1322 import *
 from modules.display1322 import *
 
 
-from oled import *
+from display import *
 from font import *
 
 
@@ -66,14 +66,14 @@ class ScreenNowPlaying():
         global ScrollAlbumFirstRound
         global ScrollAlbumNextRound
 
-        if NowPlayingLayout == 'Spectrum-Center' and newStatus != 'stop':
+        if display.SelectedScreen == 'Spectrum-Center' and newStatus != 'stop':
 
-            if newStatus != 'stop' and oled.duration is not None:
+            if newStatus != 'stop' and display.duration is not None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
                 cava_fifo = open("/tmp/cava_fifo", 'r')
                 data = cava_fifo.readline().strip().split(';')
                 # print(data)
-                self.ArtistWidth = self.draw.textlength(oled.activeArtist, font=font)
+                self.ArtistWidth = self.draw.textlength(display.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -101,9 +101,9 @@ class ScreenNowPlaying():
                             self.ArtistPosition = (Screen2text01)
                 if self.ArtistWidth <= self.width:                  # center text
                     self.ArtistPosition = (int((self.width - self.ArtistWidth) / 2), Screen2text01[1])
-                self.draw.text((self.ArtistPosition), oled.activeArtist, font=font, fill='white')
+                self.draw.text((self.ArtistPosition), display.activeArtist, font=font, fill='white')
 
-                self.SongWidth = self.draw.textlength(oled.activeSong, font=font3)
+                self.SongWidth = self.draw.textlength(display.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
                     if ScrollSongFirstRound is True:
@@ -131,39 +131,39 @@ class ScreenNowPlaying():
                             self.SongPosition = (Screen2text02)
                 if self.SongWidth <= self.width:                  # center text
                     self.SongPosition = (int((self.width - self.SongWidth) / 2), Screen2text02[1])
-                self.draw.text((self.SongPosition), oled.activeSong, font=font3, fill='white')
+                self.draw.text((self.SongPosition), display.activeSong, font=font3, fill='white')
                 if len(data) >= 64 and newStatus != 'pause':
                     for i in range(0, len(data) - 1):
                         try:
                             self.draw.rectangle((Screen2specDistance + i * Screen2specWide1, Screen2specYposTag - int(data[i]), Screen2specDistance + i * Screen2specWide1 + Screen2specWide2, Screen2specYposTag), outline=Screen2specBorder, fill=Screen2specFill)  # (255, 255, 255, 200) means Icon is nearly white. Change 200 to 0 -> icon is not visible. scale = 0-255
                         except:
                             pass
-                self.draw.text((Screen2text28), oled.playstateIcon, font=labelfont, fill='white')
-                self.draw.text((Screen2text06), oled.activeFormat, font=font4, fill='white')
+                self.draw.text((Screen2text28), display.playstateIcon, font=labelfont, fill='white')
+                self.draw.text((Screen2text06), display.activeFormat, font=font4, fill='white')
 
-                self.RateString = str(oled.activeSamplerate) + ' / ' + oled.activeBitdepth
+                self.RateString = str(display.activeSamplerate) + ' / ' + display.activeBitdepth
                 self.RateWidth = self.draw.textlength(self.RateString, font=font4)
                 self.draw.text(((256 - self.RateWidth), Screen2text07[1]), self.RateString, font=font4, fill='white')
 
-                # self.draw.text((Screen2text07), str(oled.activeSamplerate), font=font4, fill='white')
-                # self.draw.text((Screen2text08), oled.activeBitdepth, font=font4, fill='white')
+                # self.draw.text((Screen2text07), str(display.activeSamplerate), font=font4, fill='white')
+                # self.draw.text((Screen2text08), display.activeBitdepth, font=font4, fill='white')
 
-                self.draw.text((Screen2ActualPlaytimeText), str(timedelta(seconds=round(float(oled.seek) / 1000))), font=font4, fill='white')
-                if oled.duration is None:
-                    self.playbackPoint = oled.seek / oled.duration / 10
+                self.draw.text((Screen2ActualPlaytimeText), str(timedelta(seconds=round(float(display.seek) / 1000))), font=font4, fill='white')
+                if display.duration is None:
+                    self.playbackPoint = display.seek / display.duration / 10
                     self.bar = Screen2barwidth * self.playbackPoint / 100
-                    self.DurationWidth = self.draw.textlength(str(timedelta(seconds=oled.duration)), font=font4)
-                    self.draw.text(((256 - self.DurationWidth), Screen2DurationText[1]), str(timedelta(seconds=oled.duration)), font=font4, fill='white')
+                    self.DurationWidth = self.draw.textlength(str(timedelta(seconds=display.duration)), font=font4)
+                    self.draw.text(((256 - self.DurationWidth), Screen2DurationText[1]), str(timedelta(seconds=display.duration)), font=font4, fill='white')
                     self.draw.rectangle((Screen2barLineX, Screen2barLineThick1, Screen2barLineX + Screen2barwidth, Screen2barLineThick2), outline=Screen2barLineBorder, fill=Screen2barLineFill)
                     self.draw.rectangle((self.bar + Screen2barLineX - Screen2barNibbleWidth, Screen2barThick1, Screen2barX + self.bar + Screen2barNibbleWidth, Screen2barThick2), outline=Screen2barBorder, fill=Screen2barFill)
                 image.paste(self.image, (0, 0))
 
-            if newStatus != 'stop' and oled.duration is None:
+            if newStatus != 'stop' and display.duration is None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
                 cava_fifo = open("/tmp/cava_fifo", 'r')
                 data = cava_fifo.readline().strip().split(';')
                 # print(data)
-                self.ArtistWidth = self.draw.textlength(oled.activeArtist, font=font)
+                self.ArtistWidth = self.draw.textlength(display.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -191,8 +191,8 @@ class ScreenNowPlaying():
                             self.ArtistPosition = (Screen2text01)
                 if self.ArtistWidth <= self.width:                  # center text
                     self.ArtistPosition = (int((self.width - self.ArtistWidth) / 2), Screen2text01[1])
-                self.draw.text((self.ArtistPosition), oled.activeArtist, font=font, fill='white')
-                self.SongWidth = self.draw.textlength(oled.activeSong, font=font3)
+                self.draw.text((self.ArtistPosition), display.activeArtist, font=font, fill='white')
+                self.SongWidth = self.draw.textlength(display.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
                     if ScrollSongFirstRound is True:
@@ -220,7 +220,7 @@ class ScreenNowPlaying():
                             self.SongPosition = (Screen2text02)
                 if self.SongWidth <= self.width:                  # center text
                     self.SongPosition = (int((self.width - self.SongWidth) / 2), Screen2text02[1])
-                self.draw.text((self.SongPosition), oled.activeSong, font=font3, fill='white')
+                self.draw.text((self.SongPosition), display.activeSong, font=font3, fill='white')
                 if len(data) >= 64 and newStatus != 'pause':
                     for i in range(0, len(data) - 1):
                         try:
@@ -230,11 +230,11 @@ class ScreenNowPlaying():
 
                 image.paste(self.image, (0, 0))
 
-        if NowPlayingLayout == 'No-Spectrum' and newStatus != 'stop':
+        if display.SelectedScreen == 'No-Spectrum' and newStatus != 'stop':
 
-            if newStatus != 'stop' and oled.duration is not None:
+            if newStatus != 'stop' and display.duration is not None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
-                self.ArtistWidth = self.draw.textlength(oled.activeArtist, font=font)
+                self.ArtistWidth = self.draw.textlength(display.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -262,8 +262,8 @@ class ScreenNowPlaying():
                             self.ArtistPosition = (Screen4text01)
                 if self.ArtistWidth <= self.width:                  # center text
                     self.ArtistPosition = (int((self.width - self.ArtistWidth) / 2), Screen4text01[1])
-                self.draw.text((self.ArtistPosition), oled.activeArtist, font=font, fill='white')
-                self.SongWidth = self.draw.textlength(oled.activeSong, font=font3)
+                self.draw.text((self.ArtistPosition), display.activeArtist, font=font, fill='white')
+                self.SongWidth = self.draw.textlength(display.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
                     if ScrollSongFirstRound is True:
@@ -291,46 +291,46 @@ class ScreenNowPlaying():
                             self.SongPosition = (Screen4text02)
                 if self.SongWidth <= self.width:                  # center text
                     self.SongPosition = (int((self.width - self.SongWidth) / 2), Screen4text02[1])
-                self.draw.text((self.SongPosition), oled.activeSong, font=font3, fill='white')
-                self.draw.text((Screen4text28), oled.playstateIcon, font=labelfont, fill='white')
-                self.draw.text((Screen4text06), oled.activeFormat, font=font4, fill='white')
+                self.draw.text((self.SongPosition), display.activeSong, font=font3, fill='white')
+                self.draw.text((Screen4text28), display.playstateIcon, font=labelfont, fill='white')
+                self.draw.text((Screen4text06), display.activeFormat, font=font4, fill='white')
 
-                self.RateString = str(oled.activeSamplerate) + ' / ' + oled.activeBitdepth
+                self.RateString = str(display.activeSamplerate) + ' / ' + display.activeBitdepth
                 self.RateWidth = self.draw.textlength(self.RateString, font=font4)
                 self.draw.text(((256 - self.RateWidth), Screen2text07[1]), self.RateString, font=font4, fill='white')
 
-                # self.draw.text((Screen4text07), str(oled.activeSamplerate), font=font4, fill='white')
-                # self.draw.text((Screen4text08), oled.activeBitdepth, font=font4, fill='white')
+                # self.draw.text((Screen4text07), str(display.activeSamplerate), font=font4, fill='white')
+                # self.draw.text((Screen4text08), display.activeBitdepth, font=font4, fill='white')
 
-                if oled.repeat is True:
-                    if oled.repeatonce is False:
+                if display.repeat is True:
+                    if display.repeatonce is False:
                         self.draw.text((Screen4text33), oledrepeat, font=labelfont, fill='white')
-                    if oled.repeatonce is True:
+                    if display.repeatonce is True:
                         self.draw.text((Screen4text33), oledrepeat, font=labelfont, fill='white')
                         self.draw.text((Screen4text34), str(1), font=font4, fill='white')
-                if oled.shuffle is True:
+                if display.shuffle is True:
                     self.draw.text((Screen4text35), oledshuffle, font=labelfont, fill='white')
-                if oled.mute is False:
+                if display.mute is False:
                     self.draw.text((Screen4text30), oledvolumeon, font=labelfontfa, fill='white')
                 else:
                     self.draw.text((Screen4text31), oledvolumeoff, font=labelfontfa, fill='white')
-                if oled.volume >= 0:
-                    self.volume = 'Vol.: ' + str(oled.volume) + '%'
+                if display.volume >= 0:
+                    self.volume = 'Vol.: ' + str(display.volume) + '%'
                     self.draw.text((Screen4text29), self.volume, font=font4, fill='white')
-                self.draw.text((Screen4ActualPlaytimeText), str(timedelta(seconds=round(float(oled.seek) / 1000))), font=font4, fill='white')
-                if oled.duration is not None:
-                    self.playbackPoint = oled.seek / oled.duration / 10
+                self.draw.text((Screen4ActualPlaytimeText), str(timedelta(seconds=round(float(display.seek) / 1000))), font=font4, fill='white')
+                if display.duration is not None:
+                    self.playbackPoint = display.seek / display.duration / 10
                     self.bar = Screen2barwidth * self.playbackPoint / 100
-                    # self.draw.text((Screen4DurationText), str(timedelta(seconds=oled.duration)), font=font4, fill='white')
-                    self.DurationWidth = self.draw.textlength(str(timedelta(seconds=oled.duration)), font=font4)
-                    self.draw.text(((256 - self.DurationWidth), Screen4DurationText[1]), str(timedelta(seconds=oled.duration)), font=font4, fill='white')
+                    # self.draw.text((Screen4DurationText), str(timedelta(seconds=display.duration)), font=font4, fill='white')
+                    self.DurationWidth = self.draw.textlength(str(timedelta(seconds=display.duration)), font=font4)
+                    self.draw.text(((256 - self.DurationWidth), Screen4DurationText[1]), str(timedelta(seconds=display.duration)), font=font4, fill='white')
                     self.draw.rectangle((Screen4barLineX, Screen4barLineThick1, Screen4barLineX + Screen4barwidth, Screen4barLineThick2), outline=Screen4barLineBorder, fill=Screen4barLineFill)
                     self.draw.rectangle((self.bar + Screen4barLineX - Screen4barNibbleWidth, Screen4barThick1, Screen4barX + self.bar + Screen4barNibbleWidth, Screen4barThick2), outline=Screen4barBorder, fill=Screen4barFill)
                 image.paste(self.image, (0, 0))
 
-            if newStatus != 'stop' and oled.duration is None:
+            if newStatus != 'stop' and display.duration is None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
-                self.ArtistWidth = self.draw.textlength(oled.activeArtist, font=font)
+                self.ArtistWidth = self.draw.textlength(display.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -358,8 +358,8 @@ class ScreenNowPlaying():
                             self.ArtistPosition = (Screen4text01)
                 if self.ArtistWidth <= self.width:                  # center text
                     self.ArtistPosition = (int((self.width - self.ArtistWidth) / 2), Screen4text01[1])
-                self.draw.text((self.ArtistPosition), oled.activeArtist, font=font, fill='white')
-                self.SongWidth = self.draw.textlength(oled.activeSong, font=font3)
+                self.draw.text((self.ArtistPosition), display.activeArtist, font=font, fill='white')
+                self.SongWidth = self.draw.textlength(display.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
                     if ScrollSongFirstRound is True:
@@ -387,36 +387,36 @@ class ScreenNowPlaying():
                             self.SongPosition = (Screen4text02)
                 if self.SongWidth <= self.width:                  # center text
                     self.SongPosition = (int((self.width - self.SongWidth) / 2), Screen4text02[1])
-                self.draw.text((self.SongPosition), oled.activeSong, font=font3, fill='white')
-                self.draw.text((Screen4text60), oled.playstateIcon, font=labelfont, fill='white')
-                self.draw.text((Screen4Text61), oled.activeFormat, font=font4, fill='white')
-                self.draw.text((Screen4text62), oled.bitrate, font=font4, fill='white')
-                if oled.repeat is True:
-                    if oled.repeatonce is False:
+                self.draw.text((self.SongPosition), display.activeSong, font=font3, fill='white')
+                self.draw.text((Screen4text60), display.playstateIcon, font=labelfont, fill='white')
+                self.draw.text((Screen4Text61), display.activeFormat, font=font4, fill='white')
+                self.draw.text((Screen4text62), display.bitrate, font=font4, fill='white')
+                if display.repeat is True:
+                    if display.repeatonce is False:
                         self.draw.text((Screen4text63), oledrepeat, font=labelfont, fill='white')
-                    if oled.repeatonce is True:
+                    if display.repeatonce is True:
                         self.draw.text((Screen4text63), oledrepeat, font=labelfont, fill='white')
                         self.draw.text((Screen4text64), str(1), font=font4, fill='white')
-                if oled.shuffle is True:
+                if display.shuffle is True:
                     self.draw.text((Screen4text65), oledshuffle, font=labelfont, fill='white')
-                if oled.mute is False:
+                if display.mute is False:
                     self.draw.text((Screen4text66), oledvolumeon, font=labelfontfa, fill='white')
                 else:
                     self.draw.text((Screen4text67), oledvolumeoff, font=labelfontfa, fill='white')
-                if oled.volume >= 0:
-                    self.volume = 'Vol.: ' + str(oled.volume) + '%'
+                if display.volume >= 0:
+                    self.volume = 'Vol.: ' + str(display.volume) + '%'
                     self.draw.text((Screen4text68), self.volume, font=font4, fill='white')
                 image.paste(self.image, (0, 0))
 
-        if NowPlayingLayout == 'Modern' and newStatus != 'stop':
+        if display.SelectedScreen == 'Modern' and newStatus != 'stop':
 
-            if newStatus != 'stop' and oled.duration is not None:
+            if newStatus != 'stop' and display.duration is not None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
                 cava_fifo = open("/tmp/cava_fifo", 'r')
                 cava2_fifo = open("/tmp/cava2_fifo", 'r')
                 data3 = cava_fifo.readline().strip().split(';')
                 data2 = cava2_fifo.readline().strip().split(';')
-                TextBaustein = oled.activeArtist + ' - ' + oled.activeSong
+                TextBaustein = display.activeArtist + ' - ' + display.activeSong
                 self.ArtistWidth = self.draw.textlength(TextBaustein, font=font6)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
@@ -474,26 +474,26 @@ class ScreenNowPlaying():
                 self.draw.line((64, 47, 70, 36), fill='white', width=1)
                 self.draw.line((190, 47, 255, 47), fill='white', width=1)
                 self.draw.line((184, 36, 190, 47), fill='white', width=1)
-                self.draw.text((Screen5text28), oled.playstateIcon, font=labelfont, fill='white')
-                self.draw.text((Screen5text06), oled.activeFormat, font=font7, fill='white')
-                self.draw.text((Screen5text07), oled.activeSamplerate, font=font7, fill='white')
-                self.draw.text((Screen5text08), oled.activeBitdepth, font=font7, fill='white')
-                self.draw.text((Screen5ActualPlaytimeText), str(timedelta(seconds=round(float(oled.seek) / 1000))), font=font7, fill='white')
-                if oled.duration is not None:
-                    self.playbackPoint = oled.seek / oled.duration / 10
+                self.draw.text((Screen5text28), display.playstateIcon, font=labelfont, fill='white')
+                self.draw.text((Screen5text06), display.activeFormat, font=font7, fill='white')
+                self.draw.text((Screen5text07), display.activeSamplerate, font=font7, fill='white')
+                self.draw.text((Screen5text08), display.activeBitdepth, font=font7, fill='white')
+                self.draw.text((Screen5ActualPlaytimeText), str(timedelta(seconds=round(float(display.seek) / 1000))), font=font7, fill='white')
+                if display.duration is not None:
+                    self.playbackPoint = display.seek / display.duration / 10
                     self.bar = Screen2barwidth * self.playbackPoint / 100
-                    self.draw.text((Screen5DurationText), str(timedelta(seconds=oled.duration)), font=font7, fill='white')
+                    self.draw.text((Screen5DurationText), str(timedelta(seconds=display.duration)), font=font7, fill='white')
                     self.draw.rectangle((Screen5barLineX, Screen5barLineThick1, Screen5barLineX + Screen5barwidth, Screen5barLineThick2), outline=Screen5barLineBorder, fill=Screen5barLineFill)
                     self.draw.rectangle((self.bar + Screen5barLineX - Screen5barNibbleWidth, Screen5barThick1, Screen5barX + self.bar + Screen5barNibbleWidth, Screen5barThick2), outline=Screen5barBorder, fill=Screen5barFill)
                 image.paste(self.image, (0, 0))
 
-            if newStatus != 'stop' and oled.duration is None:
+            if newStatus != 'stop' and display.duration is None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
                 cava_fifo = open("/tmp/cava_fifo", 'r')
                 cava2_fifo = open("/tmp/cava2_fifo", 'r')
                 data = cava_fifo.readline().strip().split(';')
                 data2 = cava2_fifo.readline().strip().split(';')
-                TextBaustein = oled.activeArtist + ' - ' + oled.activeSong
+                TextBaustein = display.activeArtist + ' - ' + display.activeSong
                 self.ArtistWidth = self.draw.textlength(TextBaustein, font=font6)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
@@ -554,14 +554,14 @@ class ScreenNowPlaying():
                 self.draw.line((184, 36, 190, 47), fill='white', width=1)
                 image.paste(self.image, (0, 0))
 
-        if NowPlayingLayout == 'VU-Meter-2' and newStatus != 'stop':
-            if newStatus != 'stop' and oled.duration is not None:
+        if display.SelectedScreen == 'VU-Meter-2' and newStatus != 'stop':
+            if newStatus != 'stop' and display.duration is not None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
                 logoImage = Image.open('/home/volumio/NR1-UI/img/vu2.png').convert('RGB')
                 self.image.paste(logoImage, (0, 0))
                 cava2_fifo = open("/tmp/cava2_fifo", 'r')
                 data2 = cava2_fifo.readline().strip().split(';')
-                TextBaustein = oled.activeArtist + ' - ' + oled.activeSong
+                TextBaustein = display.activeArtist + ' - ' + display.activeSong
                 self.ArtistWidth = self.draw.textlength(TextBaustein, font=font8)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
@@ -591,15 +591,15 @@ class ScreenNowPlaying():
                 if self.ArtistWidth <= self.width:                  # center text
                     self.ArtistPosition = (int((self.width - self.ArtistWidth) / 2), Screen7text01[1])
                 self.draw.text((self.ArtistPosition), TextBaustein, font=font8, fill='white')
-                self.SpecString = oled.activeFormat + ' ' + oled.activeSamplerate + '/' + oled.activeBitdepth
-                self.draw.text((Screen7text28), oled.playstateIcon, font=labelfont, fill='white')
+                self.SpecString = display.activeFormat + ' ' + display.activeSamplerate + '/' + display.activeBitdepth
+                self.draw.text((Screen7text28), display.playstateIcon, font=labelfont, fill='white')
                 self.draw.text((Screen7text06), self.SpecString, font=font11, fill='white')
-                self.draw.text((Screen7ActualPlaytimeText), str(timedelta(seconds=round(float(oled.seek) / 1000))), font=font4, fill='white')
-                if oled.duration is not None:
-                    self.playbackPoint = oled.seek / oled.duration / 10
+                self.draw.text((Screen7ActualPlaytimeText), str(timedelta(seconds=round(float(display.seek) / 1000))), font=font4, fill='white')
+                if display.duration is not None:
+                    self.playbackPoint = display.seek / display.duration / 10
                     self.bar = Screen2barwidth * self.playbackPoint / 100
-                    self.DurationWidth = self.draw.textlength(str(timedelta(seconds=oled.duration)), font=font4)
-                    self.draw.text(((256 - self.DurationWidth), Screen7DurationText[1]), str(timedelta(seconds=oled.duration)), font=font4, fill='white')
+                    self.DurationWidth = self.draw.textlength(str(timedelta(seconds=display.duration)), font=font4)
+                    self.draw.text(((256 - self.DurationWidth), Screen7DurationText[1]), str(timedelta(seconds=display.duration)), font=font4, fill='white')
                     self.draw.rectangle((Screen7barLineX, Screen7barLineThick1, Screen7barLineX + Screen7barwidth, Screen7barLineThick2), outline=Screen7barLineBorder, fill=Screen7barLineFill)
                     self.draw.rectangle((self.bar + Screen7barLineX - Screen7barNibbleWidth, Screen7barThick1, Screen7barX + self.bar + Screen7barNibbleWidth, Screen7barThick2), outline=Screen7barBorder, fill=Screen7barFill)
                 if len(data2) >= 3:
@@ -613,13 +613,13 @@ class ScreenNowPlaying():
                         self.draw.line(Screen7rightVUcoordinates[rightVU1], fill='white', width=2)
                 image.paste(self.image, (0, 0))
 
-            if newStatus != 'stop' and oled.duration is None:
+            if newStatus != 'stop' and display.duration is None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
                 logoImage = Image.open('/home/volumio/NR1-UI/img/vu2.png').convert('RGB')
                 self.image.paste(logoImage, (0, 0))
                 cava2_fifo = open("/tmp/cava2_fifo", 'r')
                 data2 = cava2_fifo.readline().strip().split(';')
-                TextBaustein = oled.activeArtist + ' - ' + oled.activeSong
+                TextBaustein = display.activeArtist + ' - ' + display.activeSong
                 self.ArtistWidth = self.draw.textlength(TextBaustein, font=font8)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
@@ -660,17 +660,17 @@ class ScreenNowPlaying():
                         self.draw.line(Screen7rightVUcoordinates[rightVU1], fill='white', width=2)
                 image.paste(self.image, (0, 0))
 
-        if NowPlayingLayout == 'VU-Meter-Bar' and newStatus != 'stop':
+        if display.SelectedScreen == 'VU-Meter-Bar' and newStatus != 'stop':
             global spectrumPeaksL
             global spectrumPeaksR
-            if newStatus != 'stop' and oled.duration is not None:
+            if newStatus != 'stop' and display.duration is not None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
                 logoImage = Image.open('/home/volumio/NR1-UI/img/vudig.png').convert('RGB')
                 self.image.paste(logoImage, (0, 0))
                 spec_gradient = np.linspace(Screen8specGradstart, Screen8specGradstop, Screen8specGradSamples)
                 cava2_fifo = open("/tmp/cava2_fifo", 'r')
                 data2 = cava2_fifo.readline().strip().split(';')
-                self.ArtistWidth = self.draw.textlength(oled.activeArtist, font=font13)
+                self.ArtistWidth = self.draw.textlength(display.activeArtist, font=font13)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width - 60:
                     if ScrollArtistFirstRound is True:
@@ -698,8 +698,8 @@ class ScreenNowPlaying():
                             self.ArtistPosition = (Screen8text01[0] + 60, Screen8text01[1])
                 if self.ArtistWidth <= self.width - 60:                  # center text
                     self.ArtistPosition = (int(((self.width - 59 - self.ArtistWidth) / 2) + 60), Screen8text01[1])
-                self.draw.text((self.ArtistPosition), oled.activeArtist, font=font13, fill='white')
-                self.SongWidth = self.draw.textlength(oled.activeSong, font=font14)
+                self.draw.text((self.ArtistPosition), display.activeArtist, font=font13, fill='white')
+                self.SongWidth = self.draw.textlength(display.activeSong, font=font14)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width - 60:
                     if ScrollSongFirstRound is True:
@@ -727,17 +727,17 @@ class ScreenNowPlaying():
                             self.SongPosition = (Screen8text02[0] + 60, Screen8text02[1])
                 if self.SongWidth <= self.width - 60:                  # center text
                     self.SongPosition = (int(((self.width - 59 - self.SongWidth) / 2) + 60), Screen8text02[1])
-                self.draw.text((self.SongPosition), oled.activeSong, font=font14, fill='white')
+                self.draw.text((self.SongPosition), display.activeSong, font=font14, fill='white')
                 self.draw.rectangle((0, 0, 59, 34), fill='black', outline='black')
-                self.draw.text((Screen8text28), oled.playstateIcon, font=labelfont, fill='white')
-                self.draw.text((Screen8text06), oled.activeFormat, font=font11, fill='white')
-                self.draw.text((Screen8text07), str(oled.activeSamplerate), font=font11, fill='white')
-                self.draw.text((Screen8text08), oled.activeBitdepth, font=font11, fill='white')
-                if oled.duration is not None:
-                    self.draw.text((Screen8ActualPlaytimeText), str(timedelta(seconds=round(float(oled.seek) / 1000))), font=font11, fill='white')
-                    self.playbackPoint = oled.seek / oled.duration / 10
+                self.draw.text((Screen8text28), display.playstateIcon, font=labelfont, fill='white')
+                self.draw.text((Screen8text06), display.activeFormat, font=font11, fill='white')
+                self.draw.text((Screen8text07), str(display.activeSamplerate), font=font11, fill='white')
+                self.draw.text((Screen8text08), display.activeBitdepth, font=font11, fill='white')
+                if display.duration is not None:
+                    self.draw.text((Screen8ActualPlaytimeText), str(timedelta(seconds=round(float(display.seek) / 1000))), font=font11, fill='white')
+                    self.playbackPoint = display.seek / display.duration / 10
                     self.bar = Screen2barwidth * self.playbackPoint / 100
-                    self.draw.text((Screen8DurationText), str(timedelta(seconds=oled.duration)), font=font11, fill='white')
+                    self.draw.text((Screen8DurationText), str(timedelta(seconds=display.duration)), font=font11, fill='white')
                     self.draw.rectangle((Screen8barLineX, Screen8barLineThick1, Screen8barLineX + Screen8barwidth, Screen8barLineThick2), outline=Screen8barLineBorder, fill=Screen8barLineFill)
                     self.draw.rectangle((self.bar + Screen8barLineX - Screen8barNibbleWidth, Screen8barThick1, Screen8barX + self.bar + Screen8barNibbleWidth, Screen8barThick2), outline=Screen8barBorder, fill=Screen8barFill)
                 if len(data2) >= 3:
@@ -746,61 +746,61 @@ class ScreenNowPlaying():
                     if leftVU != '':
                         leftVU1 = int(leftVU)
                         topL = leftVU1
-                        if oled.prevFallingTimerL == 0:
+                        if display.prevFallingTimerL == 0:
                             spectrumPeaksL = leftVU1
-                        if ((time() - oled.prevFallingTimerL) > Screen8fallingTime):
+                        if ((time() - display.prevFallingTimerL) > Screen8fallingTime):
                             spectrumPeaksL = topL
                         for i in range(leftVU1):
                             try:
                                 self.draw.line(((Screen8leftVUDistance + i * Screen8leftVUWide1, Screen8leftVUYpos1), (Screen8leftVUDistance + i * Screen8leftVUWide1, Screen8leftVUYpos2)), fill=(int(spec_gradient[i]), int(spec_gradient[i]), int(spec_gradient[i])), width=Screen8leftVUWide2)
                             except:
                                 continue
-                        if oled.prevFallingTimerL == 0:
-                            oled.prevFallingTimerL = time()
+                        if display.prevFallingTimerL == 0:
+                            display.prevFallingTimerL = time()
                         if topL > spectrumPeaksL:
                             spectrumPeaksL = topL
-                        if ((time() - oled.prevFallingTimerL) > Screen8fallingTime):
-                            oled.fallingL = True
+                        if ((time() - display.prevFallingTimerL) > Screen8fallingTime):
+                            display.fallingL = True
                             if spectrumPeaksL > topL:
                                 spectrumPeaksL = topL
-                                if oled.fallingL:
-                                    oled.prevFallingTimerL = time()
-                            oled.prevFallingTimerL = time()
+                                if display.fallingL:
+                                    display.prevFallingTimerL = time()
+                            display.prevFallingTimerL = time()
                         self.draw.line(((Screen8leftVUDistance + spectrumPeaksL * Screen8leftVUWide1, Screen8leftVUYpos1), (Screen8leftVUDistance + spectrumPeaksL * Screen8leftVUWide1, Screen8leftVUYpos2)), fill='white', width=2)
                     if rightVU != '':
                         rightVU1 = int(rightVU)
                         topR = rightVU1
-                        if oled.prevFallingTimerR == 0:
+                        if display.prevFallingTimerR == 0:
                             spectrumPeaksR = rightVU1
-                        if ((time() - oled.prevFallingTimerR) > Screen8fallingTime):
+                        if ((time() - display.prevFallingTimerR) > Screen8fallingTime):
                             spectrumPeaksR = topR
                         for i in range(rightVU1):
                             try:
                                 self.draw.line(((Screen8rightVUDistance + i * Screen8rightVUWide1, Screen8rightVUYpos1), (Screen8rightVUDistance + i * Screen8rightVUWide1, Screen8rightVUYpos2)), fill=(int(spec_gradient[i]), int(spec_gradient[i]), int(spec_gradient[i])), width=Screen8rightVUWide2)
                             except:
                                 continue
-                        if oled.prevFallingTimerR == 0:
-                            oled.prevFallingTimerR = time()
+                        if display.prevFallingTimerR == 0:
+                            display.prevFallingTimerR = time()
                         if topR > spectrumPeaksR:
                             spectrumPeaksR = topR
-                        if ((time() - oled.prevFallingTimerR) > Screen8fallingTime):
-                            oled.fallingR = True
+                        if ((time() - display.prevFallingTimerR) > Screen8fallingTime):
+                            display.fallingR = True
                             if spectrumPeaksR > topR:
                                 spectrumPeaksR = topR
-                                if oled.fallingRL:
-                                    oled.prevFallingTimerR = time()
-                            oled.prevFallingTimerR = time()
+                                if display.fallingRL:
+                                    display.prevFallingTimerR = time()
+                            display.prevFallingTimerR = time()
                         self.draw.line(((Screen8rightVUDistance + spectrumPeaksR * Screen8rightVUWide1, Screen8rightVUYpos1), (Screen8rightVUDistance + spectrumPeaksR * Screen8rightVUWide1, Screen8rightVUYpos2)), fill='white', width=Screen8PeakWidth)
                 image.paste(self.image, (0, 0))
 
-            if newStatus != 'stop' and oled.duration is None:
+            if newStatus != 'stop' and display.duration is None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
                 logoImage = Image.open('/home/volumio/NR1-UI/img/vudig.png').convert('RGB')
                 self.image.paste(logoImage, (0, 0))
                 spec_gradient = np.linspace(Screen8specGradstart, Screen8specGradstop, Screen8specGradSamples)
                 cava2_fifo = open("/tmp/cava2_fifo", 'r')
                 data2 = cava2_fifo.readline().strip().split(';')
-                self.ArtistWidth = self.draw.textlength(oled.activeArtist, font=font)
+                self.ArtistWidth = self.draw.textlength(display.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -828,8 +828,8 @@ class ScreenNowPlaying():
                             self.ArtistPosition = (Screen8text11)
                 if self.ArtistWidth <= self.width:                  # center text
                     self.ArtistPosition = (int((self.width - self.ArtistWidth) / 2), Screen8text11[1])
-                self.draw.text((self.ArtistPosition), oled.activeArtist, font=font, fill='white')
-                self.SongWidth = self.draw.textlength(oled.activeSong, font=font3)
+                self.draw.text((self.ArtistPosition), display.activeArtist, font=font, fill='white')
+                self.SongWidth = self.draw.textlength(display.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
                     if ScrollSongFirstRound is True:
@@ -857,63 +857,63 @@ class ScreenNowPlaying():
                             self.SongPosition = (Screen8text22)
                 if self.SongWidth <= self.width:                  # center text
                     self.SongPosition = (int((self.width - self.SongWidth) / 2), Screen8text22[1])
-                self.draw.text((self.SongPosition), oled.activeSong, font=font3, fill='white')
+                self.draw.text((self.SongPosition), display.activeSong, font=font3, fill='white')
                 if len(data2) >= 3:
                     leftVU = data2[0]
                     rightVU = data2[1]
                     if leftVU != '':
                         leftVU1 = int(leftVU)
                         topL = leftVU1
-                        if oled.prevFallingTimerL == 0:
+                        if display.prevFallingTimerL == 0:
                             spectrumPeaksL = leftVU1
-                        if ((time() - oled.prevFallingTimerL) > Screen8fallingTime):
+                        if ((time() - display.prevFallingTimerL) > Screen8fallingTime):
                             spectrumPeaksL = topL
                         for i in range(leftVU1):
                             try:
                                 self.draw.line(((Screen8leftVUDistance + i * Screen8leftVUWide1, Screen8leftVUYpos1), (Screen8leftVUDistance + i * Screen8leftVUWide1, Screen8leftVUYpos2)), fill=(int(spec_gradient[i]), int(spec_gradient[i]), int(spec_gradient[i])), width=Screen8leftVUWide2)
                             except:
                                 continue
-                        if oled.prevFallingTimerL == 0:
-                            oled.prevFallingTimerL = time()
+                        if display.prevFallingTimerL == 0:
+                            display.prevFallingTimerL = time()
                         if topL > spectrumPeaksL:
                             spectrumPeaksL = topL
-                        if ((time() - oled.prevFallingTimerL) > Screen8fallingTime):
-                            oled.fallingL = True
+                        if ((time() - display.prevFallingTimerL) > Screen8fallingTime):
+                            display.fallingL = True
                             if spectrumPeaksL > topL:
                                 spectrumPeaksL = topL
-                                if oled.fallingL:
-                                    oled.prevFallingTimerL = time()
-                            oled.prevFallingTimerL = time()
+                                if display.fallingL:
+                                    display.prevFallingTimerL = time()
+                            display.prevFallingTimerL = time()
                         self.draw.line(((Screen8leftVUDistance + spectrumPeaksL * Screen8leftVUWide1, Screen8leftVUYpos1), (Screen8leftVUDistance + spectrumPeaksL * Screen8leftVUWide1, Screen8leftVUYpos2)), fill='white', width=Screen8PeakWidth)
                     if rightVU != '':
                         rightVU1 = int(rightVU)
                         topR = rightVU1
-                        if oled.prevFallingTimerR == 0:
+                        if display.prevFallingTimerR == 0:
                             spectrumPeaksR = rightVU1
-                        if ((time() - oled.prevFallingTimerR) > Screen8fallingTime):
+                        if ((time() - display.prevFallingTimerR) > Screen8fallingTime):
                             spectrumPeaksR = topR
                         for i in range(rightVU1):
                             try:
                                 self.draw.line(((Screen8rightVUDistance + i * Screen8rightVUWide1, Screen8rightVUYpos1), (Screen8rightVUDistance + i * Screen8rightVUWide1, Screen8rightVUYpos2)), fill=(int(spec_gradient[i]), int(spec_gradient[i]), int(spec_gradient[i])), width=Screen8rightVUWide2)
                             except:
                                 continue
-                        if oled.prevFallingTimerR == 0:
-                            oled.prevFallingTimerR = time()
+                        if display.prevFallingTimerR == 0:
+                            display.prevFallingTimerR = time()
                         if topR > spectrumPeaksR:
                             spectrumPeaksR = topR
-                        if ((time() - oled.prevFallingTimerR) > Screen8fallingTime):
-                            oled.fallingR = True
+                        if ((time() - display.prevFallingTimerR) > Screen8fallingTime):
+                            display.fallingR = True
                             if spectrumPeaksR > topR:
                                 spectrumPeaksR = topR
-                                if oled.fallingRL:
-                                    oled.prevFallingTimerR = time()
-                            oled.prevFallingTimerR = time()
+                                if display.fallingRL:
+                                    display.prevFallingTimerR = time()
+                            display.prevFallingTimerR = time()
                         self.draw.line(((Screen8rightVUDistance + spectrumPeaksR * Screen8rightVUWide1, Screen8rightVUYpos1), (Screen8rightVUDistance + spectrumPeaksR * Screen8rightVUWide1, Screen8rightVUYpos2)), fill='white', width=2)
-                # self.draw.text((self.ARTpos), oled.activeArtist, font=font, fill='white')
-                # self.draw.text((self.SONpos), oled.activeSong, font=font3, fill='white')
+                # self.draw.text((self.ARTpos), display.activeArtist, font=font, fill='white')
+                # self.draw.text((self.SONpos), display.activeSong, font=font3, fill='white')
                 image.paste(self.image, (0, 0))
 
-        elif oled.playState == 'stop':
+        elif display.playState == 'stop':
             self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
-            self.draw.text((oledtext03), oled.time, font=fontClock, fill='white')
+            self.draw.text((oledtext03), display.time, font=fontClock, fill='white')
             image.paste(self.image, (0, 0))
