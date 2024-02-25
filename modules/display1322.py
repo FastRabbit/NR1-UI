@@ -4,7 +4,7 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-from nr1ui import font
+# from nr1ui import font
 
 
 class Screen(object):  # screen base class

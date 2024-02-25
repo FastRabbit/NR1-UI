@@ -1,35 +1,42 @@
 from time import *
+import numpy as np
+from datetime import timedelta
 from ConfigurationFiles.ScreenConfig1322 import *
 from modules.display1322 import *
 
-from nr1ui import oled
-from nr1ui import font
-from nr1ui import font3
-from nr1ui import font4
-from nr1ui import font6
-from nr1ui import font7
-from nr1ui import font8
-from nr1ui import font11
-from nr1ui import font13
-from nr1ui import font14
-from nr1ui import fontClock
-from nr1ui import labelfont
-from nr1ui import labelfontfa
 
-from nr1ui import ScrollArtistTag
-from nr1ui import ScrollArtistNext
-from nr1ui import ScrollArtistFirstRound
-from nr1ui import ScrollArtistNextRound
-from nr1ui import ScrollSongTag
-from nr1ui import ScrollSongNext
-from nr1ui import ScrollSongFirstRound
-from nr1ui import ScrollSongNextRound
-from nr1ui import ScrollAlbumTag
-from nr1ui import ScrollAlbumNext
-from nr1ui import ScrollAlbumFirstRound
-from nr1ui import ScrollAlbumNextRound
-from nr1ui import NowPlayingLayout
-from nr1ui import newStatus
+from oled import *
+from font import *
+
+
+# from nr1ui import oled
+# from nr1ui import font
+# from nr1ui import font3
+# from nr1ui import font4
+# from nr1ui import font6
+# from nr1ui import font7
+# from nr1ui import font8
+# from nr1ui import font11
+# from nr1ui import font13
+# from nr1ui import font14
+# from nr1ui import fontClock
+# from nr1ui import labelfont
+# from nr1ui import labelfontfa
+
+# from nr1ui import ScrollArtistTag
+# from nr1ui import ScrollArtistNext
+# from nr1ui import ScrollArtistFirstRound
+# from nr1ui import ScrollArtistNextRound
+# from nr1ui import ScrollSongTag
+# from nr1ui import ScrollSongNext
+# from nr1ui import ScrollSongFirstRound
+# from nr1ui import ScrollSongNextRound
+# from nr1ui import ScrollAlbumTag
+# from nr1ui import ScrollAlbumNext
+# from nr1ui import ScrollAlbumFirstRound
+# from nr1ui import ScrollAlbumNextRound
+# from nr1ui import NowPlayingLayout
+# from nr1ui import newStatus
 
 
 class ScreenNowPlaying():
@@ -66,7 +73,7 @@ class ScreenNowPlaying():
                 cava_fifo = open("/tmp/cava_fifo", 'r')
                 data = cava_fifo.readline().strip().split(';')
                 # print(data)
-                self.ArtistWidth, self.ArtistHeight = self.draw.textsize(oled.activeArtist, font=font)
+                self.ArtistWidth = self.draw.textlength(oled.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -96,7 +103,7 @@ class ScreenNowPlaying():
                     self.ArtistPosition = (int((self.width - self.ArtistWidth) / 2), Screen2text01[1])
                 self.draw.text((self.ArtistPosition), oled.activeArtist, font=font, fill='white')
 
-                self.SongWidth, self.SongHeight = self.draw.textsize(oled.activeSong, font=font3)
+                self.SongWidth = self.draw.textlength(oled.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
                     if ScrollSongFirstRound is True:
@@ -135,8 +142,7 @@ class ScreenNowPlaying():
                 self.draw.text((Screen2text06), oled.activeFormat, font=font4, fill='white')
 
                 self.RateString = str(oled.activeSamplerate) + ' / ' + oled.activeBitdepth
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.RateWidth, self.RateHeight = self.draw.textsize(self.RateString, font=font4)
+                self.RateWidth = self.draw.textlength(self.RateString, font=font4)
                 self.draw.text(((256 - self.RateWidth), Screen2text07[1]), self.RateString, font=font4, fill='white')
 
                 # self.draw.text((Screen2text07), str(oled.activeSamplerate), font=font4, fill='white')
@@ -146,8 +152,7 @@ class ScreenNowPlaying():
                 if oled.duration is None:
                     self.playbackPoint = oled.seek / oled.duration / 10
                     self.bar = Screen2barwidth * self.playbackPoint / 100
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                    self.DurationWidth, self.DurationHeight = self.draw.textsize(str(timedelta(seconds=oled.duration)), font=font4)
+                    self.DurationWidth = self.draw.textlength(str(timedelta(seconds=oled.duration)), font=font4)
                     self.draw.text(((256 - self.DurationWidth), Screen2DurationText[1]), str(timedelta(seconds=oled.duration)), font=font4, fill='white')
                     self.draw.rectangle((Screen2barLineX, Screen2barLineThick1, Screen2barLineX + Screen2barwidth, Screen2barLineThick2), outline=Screen2barLineBorder, fill=Screen2barLineFill)
                     self.draw.rectangle((self.bar + Screen2barLineX - Screen2barNibbleWidth, Screen2barThick1, Screen2barX + self.bar + Screen2barNibbleWidth, Screen2barThick2), outline=Screen2barBorder, fill=Screen2barFill)
@@ -158,8 +163,7 @@ class ScreenNowPlaying():
                 cava_fifo = open("/tmp/cava_fifo", 'r')
                 data = cava_fifo.readline().strip().split(';')
                 # print(data)
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.ArtistWidth, self.ArtistHeight = self.draw.textsize(oled.activeArtist, font=font)
+                self.ArtistWidth = self.draw.textlength(oled.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -188,8 +192,7 @@ class ScreenNowPlaying():
                 if self.ArtistWidth <= self.width:                  # center text
                     self.ArtistPosition = (int((self.width - self.ArtistWidth) / 2), Screen2text01[1])
                 self.draw.text((self.ArtistPosition), oled.activeArtist, font=font, fill='white')
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.SongWidth, self.SongHeight = self.draw.textsize(oled.activeSong, font=font3)
+                self.SongWidth = self.draw.textlength(oled.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
                     if ScrollSongFirstRound is True:
@@ -231,8 +234,7 @@ class ScreenNowPlaying():
 
             if newStatus != 'stop' and oled.duration is not None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.ArtistWidth, self.ArtistHeight = self.draw.textsize(oled.activeArtist, font=font)
+                self.ArtistWidth = self.draw.textlength(oled.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -261,8 +263,7 @@ class ScreenNowPlaying():
                 if self.ArtistWidth <= self.width:                  # center text
                     self.ArtistPosition = (int((self.width - self.ArtistWidth) / 2), Screen4text01[1])
                 self.draw.text((self.ArtistPosition), oled.activeArtist, font=font, fill='white')
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.SongWidth, self.SongHeight = self.draw.textsize(oled.activeSong, font=font3)
+                self.SongWidth = self.draw.textlength(oled.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
                     if ScrollSongFirstRound is True:
@@ -295,8 +296,7 @@ class ScreenNowPlaying():
                 self.draw.text((Screen4text06), oled.activeFormat, font=font4, fill='white')
 
                 self.RateString = str(oled.activeSamplerate) + ' / ' + oled.activeBitdepth
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.RateWidth, self.RateHeight = self.draw.textsize(self.RateString, font=font4)
+                self.RateWidth = self.draw.textlength(self.RateString, font=font4)
                 self.draw.text(((256 - self.RateWidth), Screen2text07[1]), self.RateString, font=font4, fill='white')
 
                 # self.draw.text((Screen4text07), str(oled.activeSamplerate), font=font4, fill='white')
@@ -322,8 +322,7 @@ class ScreenNowPlaying():
                     self.playbackPoint = oled.seek / oled.duration / 10
                     self.bar = Screen2barwidth * self.playbackPoint / 100
                     # self.draw.text((Screen4DurationText), str(timedelta(seconds=oled.duration)), font=font4, fill='white')
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                    self.DurationWidth, self.DurationHeight = self.draw.textsize(str(timedelta(seconds=oled.duration)), font=font4)
+                    self.DurationWidth = self.draw.textlength(str(timedelta(seconds=oled.duration)), font=font4)
                     self.draw.text(((256 - self.DurationWidth), Screen4DurationText[1]), str(timedelta(seconds=oled.duration)), font=font4, fill='white')
                     self.draw.rectangle((Screen4barLineX, Screen4barLineThick1, Screen4barLineX + Screen4barwidth, Screen4barLineThick2), outline=Screen4barLineBorder, fill=Screen4barLineFill)
                     self.draw.rectangle((self.bar + Screen4barLineX - Screen4barNibbleWidth, Screen4barThick1, Screen4barX + self.bar + Screen4barNibbleWidth, Screen4barThick2), outline=Screen4barBorder, fill=Screen4barFill)
@@ -331,8 +330,7 @@ class ScreenNowPlaying():
 
             if newStatus != 'stop' and oled.duration is None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.ArtistWidth, self.ArtistHeight = self.draw.textsize(oled.activeArtist, font=font)
+                self.ArtistWidth = self.draw.textlength(oled.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -361,8 +359,7 @@ class ScreenNowPlaying():
                 if self.ArtistWidth <= self.width:                  # center text
                     self.ArtistPosition = (int((self.width - self.ArtistWidth) / 2), Screen4text01[1])
                 self.draw.text((self.ArtistPosition), oled.activeArtist, font=font, fill='white')
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.SongWidth, self.SongHeight = self.draw.textsize(oled.activeSong, font=font3)
+                self.SongWidth = self.draw.textlength(oled.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
                     if ScrollSongFirstRound is True:
@@ -420,8 +417,7 @@ class ScreenNowPlaying():
                 data3 = cava_fifo.readline().strip().split(';')
                 data2 = cava2_fifo.readline().strip().split(';')
                 TextBaustein = oled.activeArtist + ' - ' + oled.activeSong
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.ArtistWidth, self.ArtistHeight = self.draw.textsize(TextBaustein, font=font6)
+                self.ArtistWidth = self.draw.textlength(TextBaustein, font=font6)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -498,8 +494,7 @@ class ScreenNowPlaying():
                 data = cava_fifo.readline().strip().split(';')
                 data2 = cava2_fifo.readline().strip().split(';')
                 TextBaustein = oled.activeArtist + ' - ' + oled.activeSong
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.ArtistWidth, self.ArtistHeight = self.draw.textsize(TextBaustein, font=font6)
+                self.ArtistWidth = self.draw.textlength(TextBaustein, font=font6)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -567,8 +562,7 @@ class ScreenNowPlaying():
                 cava2_fifo = open("/tmp/cava2_fifo", 'r')
                 data2 = cava2_fifo.readline().strip().split(';')
                 TextBaustein = oled.activeArtist + ' - ' + oled.activeSong
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.ArtistWidth, self.ArtistHeight = self.draw.textsize(TextBaustein, font=font8)
+                self.ArtistWidth = self.draw.textlength(TextBaustein, font=font8)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -604,8 +598,7 @@ class ScreenNowPlaying():
                 if oled.duration is not None:
                     self.playbackPoint = oled.seek / oled.duration / 10
                     self.bar = Screen2barwidth * self.playbackPoint / 100
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                    self.DurationWidth, self.DurationHeight = self.draw.textsize(str(timedelta(seconds=oled.duration)), font=font4)
+                    self.DurationWidth = self.draw.textlength(str(timedelta(seconds=oled.duration)), font=font4)
                     self.draw.text(((256 - self.DurationWidth), Screen7DurationText[1]), str(timedelta(seconds=oled.duration)), font=font4, fill='white')
                     self.draw.rectangle((Screen7barLineX, Screen7barLineThick1, Screen7barLineX + Screen7barwidth, Screen7barLineThick2), outline=Screen7barLineBorder, fill=Screen7barLineFill)
                     self.draw.rectangle((self.bar + Screen7barLineX - Screen7barNibbleWidth, Screen7barThick1, Screen7barX + self.bar + Screen7barNibbleWidth, Screen7barThick2), outline=Screen7barBorder, fill=Screen7barFill)
@@ -627,8 +620,7 @@ class ScreenNowPlaying():
                 cava2_fifo = open("/tmp/cava2_fifo", 'r')
                 data2 = cava2_fifo.readline().strip().split(';')
                 TextBaustein = oled.activeArtist + ' - ' + oled.activeSong
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.ArtistWidth, self.ArtistHeight = self.draw.textsize(TextBaustein, font=font8)
+                self.ArtistWidth = self.draw.textlength(TextBaustein, font=font8)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -678,8 +670,7 @@ class ScreenNowPlaying():
                 spec_gradient = np.linspace(Screen8specGradstart, Screen8specGradstop, Screen8specGradSamples)
                 cava2_fifo = open("/tmp/cava2_fifo", 'r')
                 data2 = cava2_fifo.readline().strip().split(';')
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.ArtistWidth, self.ArtistHeight = self.draw.textsize(oled.activeArtist, font=font13)
+                self.ArtistWidth = self.draw.textlength(oled.activeArtist, font=font13)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width - 60:
                     if ScrollArtistFirstRound is True:
@@ -708,8 +699,7 @@ class ScreenNowPlaying():
                 if self.ArtistWidth <= self.width - 60:                  # center text
                     self.ArtistPosition = (int(((self.width - 59 - self.ArtistWidth) / 2) + 60), Screen8text01[1])
                 self.draw.text((self.ArtistPosition), oled.activeArtist, font=font13, fill='white')
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.SongWidth, self.SongHeight = self.draw.textsize(oled.activeSong, font=font14)
+                self.SongWidth = self.draw.textlength(oled.activeSong, font=font14)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width - 60:
                     if ScrollSongFirstRound is True:
@@ -810,8 +800,7 @@ class ScreenNowPlaying():
                 spec_gradient = np.linspace(Screen8specGradstart, Screen8specGradstop, Screen8specGradSamples)
                 cava2_fifo = open("/tmp/cava2_fifo", 'r')
                 data2 = cava2_fifo.readline().strip().split(';')
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.ArtistWidth, self.ArtistHeight = self.draw.textsize(oled.activeArtist, font=font)
+                self.ArtistWidth = self.draw.textlength(oled.activeArtist, font=font)
                 self.ArtistStopPosition = self.ArtistWidth - self.width + ArtistEndScrollMargin
                 if self.ArtistWidth >= self.width:
                     if ScrollArtistFirstRound is True:
@@ -840,8 +829,7 @@ class ScreenNowPlaying():
                 if self.ArtistWidth <= self.width:                  # center text
                     self.ArtistPosition = (int((self.width - self.ArtistWidth) / 2), Screen8text11[1])
                 self.draw.text((self.ArtistPosition), oled.activeArtist, font=font, fill='white')
-                # DeprecationWarning: textsize is deprecated and will be removed in Pillow 10 (2023-07-01). Use textbbox or textlength instead.
-                self.SongWidth, self.SongHeight = self.draw.textsize(oled.activeSong, font=font3)
+                self.SongWidth = self.draw.textlength(oled.activeSong, font=font3)
                 self.SongStopPosition = self.SongWidth - self.width + SongEndScrollMargin
                 if self.SongWidth >= self.width:
                     if ScrollSongFirstRound is True:

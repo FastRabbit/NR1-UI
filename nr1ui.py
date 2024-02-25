@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 
 from __future__ import unicode_literals
-from luma.oled.device import ssd1322
-from luma.core.interface.serial import spi
 import requests
 import json
 from pycurl import Curl
@@ -15,6 +13,9 @@ from io import BytesIO
 from PIL import Image
 from PIL import ImageDraw
 import numpy as np
+
+from oled import *
+from font import *
 
 from ConfigurationFiles.ScreenConfig1322 import *
 from ConfigurationFiles.PreConfiguration import NowPlayingLayout, SpectrumActive
@@ -34,13 +35,13 @@ GPIO.setwarnings(False)
 # Socket-IO-Configuration for Rest API
 volumio_host = 'localhost'
 volumio_port = 3000
-volumio_socket_io = SocketIO(volumio_host, volumio_port)
+volumioIO = SocketIO(volumio_host, volumio_port)
 
 
-if SpectrumActive:
-    ScreenList = ['Spectrum-Center', 'No-Spectrum', 'Modern', 'VU-Meter-2', 'VU-Meter-Bar']
-else:
-    ScreenList = ['No-Spectrum']
+# if SpectrumActive:
+#     ScreenList = ['Spectrum-Center', 'No-Spectrum', 'Modern', 'VU-Meter-2', 'VU-Meter-Bar']
+# else:
+#     ScreenList = ['No-Spectrum']
 
 
 # Logic to prevent freeze if FIFO-Out for Cava is missing:
@@ -52,14 +53,14 @@ if SpectrumActive is True:
         else:
             print('CAVA1 FIFO-Output in /etc/mpd.conf is missing!')
             print('Rebuilding mpd.conf now, this will take ~5 seconds.')
-            volumio_socket_io.emit('callMethod', ReNewMPDconf)
+            volumioIO.emit('callMethod', ReNewMPDconf)
             sleep(5.0)
         if '/tmp/mpd2.fifo' in f1.read():
             print("CAVA2 Fifo-Output is present in mpd.conf")
         else:
             print('CAVA2 FIFO-Output in /etc/mpd.conf is missing!')
             print('Rebuilding mpd.conf now, this will take ~5 seconds.')
-            volumio_socket_io.emit('callMethod', ReNewMPDconf)
+            volumioIO.emit('callMethod', ReNewMPDconf)
             sleep(5.0)
 
 
@@ -90,69 +91,26 @@ STATE_SCREEN_MENU = 3
 
 UPDATE_INTERVAL = 0.034
 
-oled = ssd1322(spi(device=0, port=0), rotate=oledrotation)
-oled.WIDTH = 256
-oled.HEIGHT = 64
-
-oled.state = 'stop'
-oled.stateTimeout = 0
-oled.playstateIcon = ''
-oled.timeOutRunning = False
-oled.activeSong = ''
-oled.activeArtist = 'VOLuMIO'
-oled.playState = 'unknown'
-oled.playPosition = 0
-oled.seek = 1000
-oled.duration = 1.0
-oled.modal = None
-oled.queue = []
-oled.volume = 100
-oled.time = datetime.now().strftime("%H:%M")
-emit_track = False
-newStatus = 0  # makes newStatus usable outside of onPushState
-oled.activeFormat = ''  # makes oled.activeFormat globaly usable
-oled.activeSamplerate = ''  # makes oled.activeSamplerate globaly usable
-oled.activeBitdepth = ''  # makes oled.activeBitdepth globaly usable
-oled.activeArtists = ''  # makes oled.activeArtists globaly usable
-oled.activeAlbums = ''  # makes oled.activeAlbums globaly usable
-oled.activeAlbum = ''
-oled.activeSongs = ''  # makes oled.activeSongs globaly usable
-oled.activePlaytime = ''  # makes oled.activePlaytime globaly usable
-oled.ShutdownFlag = False  # helper to detect if "shutdown" is running. Prevents artifacts from Standby-Screen during shutdown
-varcanc = True  # helper for pause -> stop timeout counter
-secvar = 0.0
-oled.SelectedScreen = NowPlayingLayout
-oled.fallingL = False
-oled.fallingR = False
-oled.prevFallingTimerL = 0
-oled.prevFallingTimerR = 0
-ScrollArtistTag = 0
-ScrollArtistNext = 0
-ScrollArtistFirstRound = True
-ScrollArtistNextRound = False
-ScrollSongTag = 0
-ScrollSongNext = 0
-ScrollSongFirstRound = True
-ScrollSongNextRound = False
-ScrollAlbumTag = 0
-ScrollAlbumNext = 0
-ScrollAlbumFirstRound = True
-ScrollAlbumNextRound = False
-ScrollSpecsTag = 0
-ScrollSpecsNext = 0
-ScrollSpecsFirstRound = True
-ScrollSpecsNextRound = False
-oled.selQueue = ''
-oled.repeat = False
-oled.bitrate = ''
-oled.repeatonce = False
-oled.shuffle = False
-oled.mute = False
-oled.ScreenTimer10 = False
-oled.ScreenTimer20 = False
-oled.ScreenTimerStamp = 0.0
-oled.ScreenTimerStart = True
-oled.ScreenTimerChangeTime = 10.0
+# emit_track = False
+# newStatus = 0  # makes newStatus usable outside of onPushState
+# varcanc = True  # helper for pause -> stop timeout counter
+# secvar = 0.0
+# ScrollArtistTag = 0
+# ScrollArtistNext = 0
+# ScrollArtistFirstRound = True
+# ScrollArtistNextRound = False
+# ScrollSongTag = 0
+# ScrollSongNext = 0
+# ScrollSongFirstRound = True
+# ScrollSongNextRound = False
+# ScrollAlbumTag = 0
+# ScrollAlbumNext = 0
+# ScrollAlbumFirstRound = True
+# ScrollAlbumNextRound = False
+# ScrollSpecsTag = 0
+# ScrollSpecsNext = 0
+# ScrollSpecsFirstRound = True
+# ScrollSpecsNextRound = False
 
 image = Image.new('RGB', (oled.WIDTH, oled.HEIGHT))  # for Pixelshift: (oled.WIDTH + 4, oled.HEIGHT + 4))
 
@@ -160,7 +118,7 @@ oled.clear()
 
 
 def load_font(filename, font_size):
-    font_path = os.path.dirname(os.path.realpath(__file__)) + '/../fonts/'
+    font_path = os.path.dirname(os.path.realpath(__file__)) + '/fonts/'
     try:
         font = ImageFont.truetype(font_path + filename, font_size)
     except IOError:
@@ -524,7 +482,7 @@ def RightKnob_PushEvent(hold_time):
             WriteSelScreen.close
             NowPlayingLayout = Screen
             SetState(STATE_PLAYER)
-            volumio_socket_io.emit('stop')
+            volumioIO.emit('stop')
 
 
 RightKnob_Push = PushButton(ENCODER_BUTTON_IO, max_time=2)
@@ -549,20 +507,20 @@ updateThread.start()
 
 
 def _receive_thread():
-    volumio_socket_io.wait()
+    volumioIO.wait()
 
 
 receive_thread = Thread(target=_receive_thread)
 receive_thread.daemon = True
 receive_thread.start()
 
-volumio_socket_io.on('pushState', onPushState)
-volumio_socket_io.on('pushQueue', onPushQueue)
+volumioIO.on('pushState', onPushState)
+volumioIO.on('pushQueue', onPushQueue)
 
 # get list of Playlists and initial state
-volumio_socket_io.emit('listPlaylist')
-volumio_socket_io.emit('getState')
-volumio_socket_io.emit('getQueue')
+volumioIO.emit('listPlaylist')
+volumioIO.emit('getState')
+volumioIO.emit('getQueue')
 
 sleep(0.1)
 
@@ -582,7 +540,7 @@ InfoTag = 0
 
 def PlaypositionHelper():
     while True:
-        volumio_socket_io.emit('getState')
+        volumioIO.emit('getState')
         oled.date = datetime.now().strftime("%d.%m.%Y")
         sleep(1.0)
 
@@ -602,51 +560,92 @@ while True:
             InfoTag = 0
         except IndexError:
             pass
-        volumio_socket_io.emit('stop')
+        volumioIO.emit('stop')
         sleep(0.01)
-        volumio_socket_io.emit('play', {'value': oled.selQueue})
+        volumioIO.emit('play', {'value': oled.selQueue})
     sleep(0.1)
 
-    if oled.state == STATE_PLAYER:
+    # this is the loop to push the actual time every 0.1sec to the "Standby-Screen"
+    if oled.state == STATE_PLAYER and newStatus == 'stop' and oled.ShutdownFlag is False:
+        InfoTag = 0  # resets the InfoTag helper from artist/song update loop
+        oled.state = 0
+        oled.time = strftime("%H:%M")
+        SetState(STATE_PLAYER)
+        oled.modal.UpdateStandbyInfo()
+        sleep(0.2)
 
-        # this is the loop to push the actual time every 0.1sec to the "Standby-Screen"
-        if newStatus == 'stop' and oled.ShutdownFlag is False:
-            InfoTag = 0  # resets the InfoTag helper from artist/song update loop
-            oled.time = datetime.now().strftime("%H:%M")
-            SetState(STATE_PLAYER)
-            oled.modal.UpdateStandbyInfo()
-            sleep(0.2)
+    # if playback is paused, here is defined when the Player goes back to "Standby"/Stop     
+    if oled.state == STATE_PLAYER and newStatus == 'pause' and varcanc is True:
+        secvar = int(round(time()))
+        varcanc = False
+    elif oled.state == STATE_PLAYER and newStatus == 'pause' and int(round(time())) - secvar > oledPause2StopTime:
+        varcanc = True
+        volumioIO.emit('stop')
+        oled.modal.UpdateStandbyInfo()
+        secvar = 0.0
 
-        # if playback is paused, here is defined when the Player goes back to "Standby"/Stop
-        if newStatus == 'pause' and varcanc is True:
-            secvar = int(round(time()))
-            varcanc = False
-        elif newStatus == 'pause' and int(round(time())) - secvar > oledPause2StopTime:
-            varcanc = True
-            volumio_socket_io.emit('stop')
-            oled.modal.UpdateStandbyInfo()
-            secvar = 0.0
+    if oled.state == STATE_PLAYER and newStatus == 'play' and oled.ScreenTimerStart is True:
+        oled.ScreenTimerStamp = int(round(time()))
+        oled.ScreenTimerStart = False
+        oled.ScreenTimer10 = True
 
-        if newStatus == 'play' and oled.ScreenTimerStart is True:
-            oled.ScreenTimerStamp = int(round(time()))
-            oled.ScreenTimerStart = False
-            oled.ScreenTimer10 = True
-
-        if newStatus != 'stop':
-            if oled.ScreenTimer10 is True and (int(round(time())) - oled.ScreenTimerStamp > oled.ScreenTimerChangeTime):
-                oled.ScreenTimerChangeTime
-                oled.ScreenTimer10 = False
-                oled.ScreenTimer20 = True
-            if oled.ScreenTimer20 is True and ((int(round(time())) - oled.ScreenTimerStamp) > (oled.ScreenTimerChangeTime * 2)):
-                oled.ScreenTimer20 = False
-                oled.ScreenTimerStart = True
-                oled.ScreenTimerStamp = 0.0
-                oled.ScreenTimer10 = True
-
-        if oled.state != STATE_PLAYER:
+    if oled.state == STATE_PLAYER and newStatus != 'stop': 
+        if oled.ScreenTimer10 is True and (int(round(time())) - oled.ScreenTimerStamp > oled.ScreenTimerChangeTime):
+            oled.ScreenTimerChangeTime
             oled.ScreenTimer10 = False
+            oled.ScreenTimer20 = True
+        if oled.ScreenTimer20 is True and ((int(round(time())) - oled.ScreenTimerStamp) > (oled.ScreenTimerChangeTime * 2)):
             oled.ScreenTimer20 = False
             oled.ScreenTimerStart = True
             oled.ScreenTimerStamp = 0.0
+            oled.ScreenTimer10 = True
+
+    if oled.state != STATE_PLAYER:
+        oled.ScreenTimer10 = False
+        oled.ScreenTimer20 = False
+        oled.ScreenTimerStart = True
+        oled.ScreenTimerStamp = 0.0
+
+    # if oled.state == STATE_PLAYER:
+
+    #     # this is the loop to push the actual time every 0.1sec to the "Standby-Screen"
+    #     if newStatus == 'stop' and oled.ShutdownFlag is False:
+    #         InfoTag = 0  # resets the InfoTag helper from artist/song update loop
+    #         oled.time = datetime.now().strftime("%H:%M")
+    #         SetState(STATE_PLAYER)
+    #         oled.modal.UpdateStandbyInfo()
+    #         sleep(0.2)
+
+    #     # if playback is paused, here is defined when the Player goes back to "Standby"/Stop
+    #     if newStatus == 'pause' and varcanc is True:
+    #         secvar = int(round(time()))
+    #         varcanc = False
+    #     elif newStatus == 'pause' and int(round(time())) - secvar > oledPause2StopTime:
+    #         varcanc = True
+    #         volumioIO.emit('stop')
+    #         oled.modal.UpdateStandbyInfo()
+    #         secvar = 0.0
+
+    #     if newStatus == 'play' and oled.ScreenTimerStart is True:
+    #         oled.ScreenTimerStamp = int(round(time()))
+    #         oled.ScreenTimerStart = False
+    #         oled.ScreenTimer10 = True
+
+    #     if newStatus != 'stop':
+    #         if oled.ScreenTimer10 is True and (int(round(time())) - oled.ScreenTimerStamp > oled.ScreenTimerChangeTime):
+    #             oled.ScreenTimerChangeTime
+    #             oled.ScreenTimer10 = False
+    #             oled.ScreenTimer20 = True
+    #         if oled.ScreenTimer20 is True and ((int(round(time())) - oled.ScreenTimerStamp) > (oled.ScreenTimerChangeTime * 2)):
+    #             oled.ScreenTimer20 = False
+    #             oled.ScreenTimerStart = True
+    #             oled.ScreenTimerStamp = 0.0
+    #             oled.ScreenTimer10 = True
+
+    # if oled.state != STATE_PLAYER:
+    #     oled.ScreenTimer10 = False
+    #     oled.ScreenTimer20 = False
+    #     oled.ScreenTimerStart = True
+    #     oled.ScreenTimerStamp = 0.0
 
     sleep(0.02)
