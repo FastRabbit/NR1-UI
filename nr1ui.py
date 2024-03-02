@@ -145,14 +145,6 @@ def onPushState(data):
         global ScrollSongNext
         global ScrollSongFirstRound
         global ScrollSongNextRound
-        global ScrollAlbumTag
-        global ScrollAlbumNext
-        global ScrollAlbumFirstRound
-        global ScrollAlbumNextRound
-        global ScrollSpecsTag
-        global ScrollSpecsNext
-        global ScrollSpecsFirstRound
-        global ScrollSpecsNextRound
         OPDsave = data
         # print('data: ', str(data).encode('utf-8'))
 
@@ -275,14 +267,6 @@ def onPushState(data):
             ScrollSongNext = 0
             ScrollSongFirstRound = True
             ScrollSongNextRound = False
-            ScrollAlbumTag = 0
-            ScrollAlbumNext = 0
-            ScrollAlbumFirstRound = True
-            ScrollAlbumNextRound = False
-            ScrollSpecsTag = 0
-            ScrollSpecsNext = 0
-            ScrollSpecsFirstRound = True
-            ScrollSpecsNextRound = False
 
         if newStatus != display.playState:
             varcanc = True  # helper for pause -> stop timeout counter

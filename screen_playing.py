@@ -29,10 +29,6 @@ class ScreenNowPlaying():
         global ScrollSongNext
         global ScrollSongFirstRound
         global ScrollSongNextRound
-        global ScrollAlbumTag
-        global ScrollAlbumNext
-        global ScrollAlbumFirstRound
-        global ScrollAlbumNextRound
 
         if display.SelectedScreen == 'Spectrum-Center' and newStatus != 'stop':
 
