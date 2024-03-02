@@ -11,7 +11,7 @@ class ScreenNowPlaying():
     def __init__(self, height, width):
         self.height = height
         self.width = width
-        self.image_vu2 = Image.open('/home/volumio/NR1-UI/img/vu2.png').convert('RGB')
+        self.image_vu = Image.open('/home/volumio/NR1-UI/img/vu.png').convert('RGB')
         self.image_vudig = Image.open('/home/volumio/NR1-UI/img/vudig.png').convert('RGB')
 
     def UpdatePlayingInfo(self):
@@ -523,7 +523,7 @@ class ScreenNowPlaying():
         if display.SelectedScreen == 'VU-Meter-2' and newStatus != 'stop':
             if newStatus != 'stop' and display.duration is not None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])0
-                self.image.paste(self.image_vu2, (0, 0))
+                self.image.paste(self.image_vu, (0, 0))
                 cava2_fifo = open("/tmp/cava2_fifo", 'r')
                 data2 = cava2_fifo.readline().strip().split(';')
                 TextBaustein = display.activeArtist + ' - ' + display.activeSong
@@ -580,7 +580,7 @@ class ScreenNowPlaying():
 
             if newStatus != 'stop' and display.duration is None:
                 self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
-                self.image.paste(self.image_vu2, (0, 0))
+                self.image.paste(self.image_vu, (0, 0))
                 cava2_fifo = open("/tmp/cava2_fifo", 'r')
                 data2 = cava2_fifo.readline().strip().split(';')
                 TextBaustein = display.activeArtist + ' - ' + display.activeSong
