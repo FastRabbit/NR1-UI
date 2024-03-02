@@ -16,8 +16,7 @@ def load_font(filename, font_size):
 
 
 font = load_font('NotoSansTC-Bold.otf', 18)  # used for Artist
-font2 = load_font('NotoSansTC-Light.otf', 12)  # used for all menus
-font14 = load_font('NotoSansTC-Light.otf', 12)  # used for Artist
+font2 = load_font('NotoSansTC-Light.otf', 12)  # used for all menus, Artist
 font3 = load_font('NotoSansTC-Regular.otf', 16)  # used for Song
 font4 = load_font('Oxanium-Medium.ttf', 12)  # used for Format/Smplerate/Bitdepth
 font6 = load_font('NotoSansTC-Regular.otf', 12)  # used for Song / Screen5
