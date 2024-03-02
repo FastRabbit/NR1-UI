@@ -57,12 +57,10 @@ display.ScreenTimerStamp = 0.0
 display.ScreenTimerStart = True
 display.ScreenTimerChangeTime = 10.0
 
-
 emit_track = False
 newStatus = 0  # makes newStatus usable outside of onPushState
 varcanc = True  # helper for pause -> stop timeout counter
 secvar = 0.0
-
 
 ScrollArtistTag = 0
 ScrollArtistNext = 0
@@ -80,4 +78,3 @@ ScrollSpecsTag = 0
 ScrollSpecsNext = 0
 ScrollSpecsFirstRound = True
 ScrollSpecsNextRound = False
-

@@ -3,8 +3,6 @@ import numpy as np
 from datetime import timedelta
 from ConfigurationFiles.ScreenConfig1322 import *
 from modules.display1322 import *
-
-
 from display import *
 from font import *
 

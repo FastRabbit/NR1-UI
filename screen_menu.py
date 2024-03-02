@@ -1,12 +1,6 @@
 from ConfigurationFiles.ScreenConfig1322 import *
-
 from modules.display1322 import StaticText
 from modules.display1322 import *
-
-# from nr1ui import oled
-# from nr1ui import font2
-
-
 from display import *
 from font import *
 

@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import os
-
 from PIL import ImageFont
 
 
