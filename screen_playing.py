@@ -522,7 +522,7 @@ class ScreenNowPlaying():
 
         if display.SelectedScreen == 'VU-Meter-2' and newStatus != 'stop':
             if newStatus != 'stop' and display.duration is not None:
-                self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])0
+                self.image.paste(('black'), [0, 0, image.size[0], image.size[1]])
                 self.image.paste(self.image_vu, (0, 0))
                 cava2_fifo = open("/tmp/cava2_fifo", 'r')
                 data2 = cava2_fifo.readline().strip().split(';')
